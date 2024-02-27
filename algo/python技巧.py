@@ -27,3 +27,7 @@ heapq.nsmallest(n, iterable, key=None)
 
 # 弹出最小的值，并替换为新的值再加入堆 - 相当于heappop + heappush
 heapreplace(nums, new_num)
+
+# enumerate 定义下标从哪里开始
+for idx, item in enumerate(arr, 1): # idx从1开始
+    pass 

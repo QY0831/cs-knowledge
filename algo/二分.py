@@ -1,4 +1,4 @@
-def check(x):
+def check(x) -> bool:
     pass
 
 # 返回满足条件的最左下标(前提是一定有解，否则还需要检查最后left位置的数)
@@ -20,3 +20,6 @@ def bsearch_right(left, right):
         else:
             left = mid
     return left
+
+# 库函数
+bisect_left(arr, True, key=check) # arr中满足check的最小下标
