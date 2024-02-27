@@ -1,7 +1,7 @@
 def check(x):
     pass
 
-# 返回满足条件的最左下标
+# 返回满足条件的最左下标(前提是一定有解，否则还需要检查最后left位置的数)
 def bsearch_left(left, right):
     while left < right:
         mid = (left + right) // 2
@@ -11,7 +11,7 @@ def bsearch_left(left, right):
             right = mid
     return left
 
-# 返回满足条件的最右下标
+# 返回满足条件的最右下标(前提是一定有解，否则还需要检查最后left位置的数)
 def bsearch_right(left, right):
     while left < right:
         mid = (left + right + 1) // 2
@@ -20,5 +20,3 @@ def bsearch_right(left, right):
         else:
             left = mid
     return left
-
-

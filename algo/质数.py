@@ -3,6 +3,7 @@
 MX = 10 ** 6 + 10
 primes = []
 is_prime = [True] * MX
+is_prime[1] = False
 for i in range(2, MX):
     if is_prime[i]:
         primes.append(i)
