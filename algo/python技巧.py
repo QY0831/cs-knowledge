@@ -31,3 +31,15 @@ heapreplace(nums, new_num)
 # enumerate 定义下标从哪里开始
 for idx, item in enumerate(arr, 1): # idx从1开始
     pass 
+
+# SortedList
+from sortedcontainers import SortedList
+s = SortedList([])
+s.add(1)
+idx = s.index(1)  # 返回元素1的索引
+s.remove(1) # 删除元素1
+# 查找sortedlist中严格大于val的数量
+# bisect_right方法返回的是将val插入到sortedlist中的索引位置。
+# 由于sortedlist是有序的，所以这个索引位置之后的元素都严格大于val。
+def helper(arr, val):
+    return len(arr) - arr.bisect_right(val)

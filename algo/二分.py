@@ -23,3 +23,7 @@ def bsearch_right(left, right):
 
 # 库函数
 bisect_left(arr, True, key=check) # arr中满足check的最小下标
+
+# 查找sortedlist中严格大于val的数量
+def helper(arr, val):
+    return len(arr) - arr.bisect_right(val)
