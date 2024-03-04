@@ -22,8 +22,9 @@ s = sorted(zip(arr1, arr2))
 sum = reduce(lambda x, y: x+y, [1,2,3,4,5]) # 15
 
 # 取集合中最大或最小的n个, key可以定义比较内容
-heapq.nlargest(n, iterable, key=None)
-heapq.nsmallest(n, iterable, key=None)
+res = heapq.nlargest(n, iterable, key=None)
+res = heapq.nsmallest(n, iterable, key=None)
+mn, mn2 = heapq.nsmallest(2, iterable) # mn是最小值， mn2是次小值
 
 # 弹出最小的值，并替换为新的值再加入堆 - 相当于heappop + heappush
 heapreplace(nums, new_num)
