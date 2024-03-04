@@ -23,3 +23,12 @@ for i in range(MX - 1, 0, -1):
 
 def comb(n: int, k: int) -> int: # n个里选k个
     return fac[n] * inv_fac[k] % MOD * inv_fac[n - k] % MOD
+
+# 乘法原理
+# https://leetcode.cn/problems/count-valid-paths-in-a-tree/
+# https://leetcode.cn/problems/count-pairs-of-connectable-servers-in-a-weighted-tree-network
+# 在统计树中能符合条件的点对时（它们位于不同的连通块）的方法：
+# 设从0的邻居出发，能访问到3，4，5个符合条件的节点。
+# 4和左边3个点，两两之间符合要求。
+# 5和左边3+4个点，两两之间符合要求。
+# 根据乘法原理，把4 * 3 + 5 * 7 加到答案中。
