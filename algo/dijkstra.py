@@ -1,5 +1,24 @@
+# Dijkstra 算法模板: 解决单源最短路径问题
+# 返回从 start 到每个点的最短路
+def dijkstra(g: List[List[Tuple[int]]], start: int) -> List[int]:
+    dist = [inf] * len(g)
+    dist[start] = 0
+    h = [(0, start)]
+    while h:
+        d, x = heappop(h)
+        if d > dist[x]:
+            continue
+        for y, wt in g[x]:
+            new_d = dist[x] + wt
+            if new_d < dist[y]:
+                dist[y] = new_d
+                heappush(h, (new_d, y))
+    return dist
+
+
 # https://leetcode.cn/problems/network-delay-time/description/
-# 朴素dij
+# 朴素dij（适用于稠密图）
+# 稠密图：https://leetcode.cn/problems/minimum-cost-of-a-path-with-special-roads/description/
 class Solution:
     def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
         g = [[] for _ in range(n)]  # 邻接表
@@ -21,8 +40,7 @@ class Solution:
         mx = max(dis)
         return mx if mx < inf else -1
 
-
-# 堆优化dij
+# 堆优化dij（适用于稀疏图）
 class Solution:
     def networkDelayTime(self, times: List[List[int]], n: int, k: int) -> int:
         g = [[] for _ in range(n)]  # 邻接表
@@ -46,6 +64,7 @@ class Solution:
     
 
 # 求两个节点间的最短路
+# 多源最短路最好用floyd
 def shortestPath(n: int, edges: int, node1: int, node2: int) -> int:
     g = [[] for _ in range(n)]  # 邻接表
     for x, y, d in edges:

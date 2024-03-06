@@ -75,3 +75,42 @@ class Solution:
                     q.append(nxt)
         return cnt == numCourses
 
+
+# BFS求次最短路
+# https://leetcode.cn/problems/second-minimum-time-to-reach-destination
+class Solution:
+    def secondMinimum(self, n: int, edges: List[List[int]], time: int, change: int) -> int:
+        graph = collections.defaultdict(set)
+        for start, end in edges:
+            graph[start].add(end)
+            graph[end].add(start)
+
+        # i: 1 ~ n
+        # dist[i][0]:  1 ~ i 最短距离
+        # dist[i][1]:  1 ~ i 次短距离
+        dist = [[float('inf')] * 2 for _ in range(n+1)]
+        dist[1][0] = 0
+        q = collections.deque([])
+        q.append((1, 0))  # position, distance
+        while dist[n][1] == float('inf'):
+            position, distance = q.popleft()
+            for next in graph[position]:
+                d = distance + 1
+                if d < dist[next][0]:
+                    dist[next][0] = d
+                    q.append((next, d))
+                elif dist[next][0] < d < dist[next][1]:
+                    dist[next][1] = d
+                    q.append((next, d))
+                    
+        ans = 0
+        # time 3
+        # change 5
+        # green:0 red:5 green:10 red:15 green:20
+        # dist = 3
+        # 3 + 3 + (10-6) + 3
+        for _ in range(dist[n][1]):
+            if ans % (change * 2) >= change:
+                ans += change * 2 - ans % (change * 2)
+            ans += time
+        return ans

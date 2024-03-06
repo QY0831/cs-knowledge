@@ -44,3 +44,7 @@ s.remove(1) # 删除元素1
 # 由于sortedlist是有序的，所以这个索引位置之后的元素都严格大于val。
 def helper(arr, val):
     return len(arr) - arr.bisect_right(val)
+
+
+# defaultdict 设置默认值
+defaultdict(lambda: inf) # 默认value为inf
