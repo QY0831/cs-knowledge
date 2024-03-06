@@ -48,3 +48,8 @@ def helper(arr, val):
 
 # defaultdict 设置默认值
 defaultdict(lambda: inf) # 默认value为inf
+
+
+# 求所有组合
+from itertools import combinations
+res = combinations(nums,k) # nums中取k个的所有组合
