@@ -13,3 +13,16 @@ class StringHash:
     # 用O(1)时间获取闭区间[l,r]（即s[l:r]）的哈希值，比切片要快
     def get_hash(self, l, r):
         return (self.h[r+1] - self.h[l] * self.p[r - l + 1]) % self.MOD
+    
+
+# 判断s是否t的子序列
+def isSubsequence(s: str, t: str) -> bool:
+    i = 0
+    if not s:
+        return True
+    for c in t:
+        if s[i] == c:
+            i += 1
+            if i == len(s):
+                return True
+    return False

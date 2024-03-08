@@ -6,7 +6,6 @@ def c2(x):
 def sum_arithmetic_seq(start, end, n):
     return (start + end) * n // 2
 
-
 MOD = 1_000_000_007
 MX = 100_000
 
@@ -32,3 +31,13 @@ def comb(n: int, k: int) -> int: # n个里选k个
 # 4和左边3个点，两两之间符合要求。
 # 5和左边3+4个点，两两之间符合要求。
 # 根据乘法原理，把4 * 3 + 5 * 7 加到答案中。
+
+
+# 模运算
+# a = k1*m + r1, b = k2*m + r2
+# (a + b) mod m = (r1 + r2) mod m = (a mod m + b mod m) mod m
+
+
+# 最小公倍数 lcm(Leatest Common Multiple)
+lcm = math.lcm(d1, d2)
+# 能被lcm的整除的，同时能被d1,d2整除
