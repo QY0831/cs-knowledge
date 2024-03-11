@@ -1,3 +1,5 @@
+from . import *
+
 # 取出现频率最多的n个数
 Counter(nums).most_common(n) # 返回值为 [(key1, value1) ... (keyn, valuen)]
 
@@ -27,7 +29,7 @@ res = heapq.nsmallest(n, iterable, key=None)
 mn, mn2 = heapq.nsmallest(2, iterable) # mn是最小值， mn2是次小值
 
 # 弹出最小的值，并替换为新的值再加入堆 - 相当于heappop + heappush
-heapreplace(nums, new_num)
+heapq.heapreplace(nums, new_num)
 
 # enumerate 定义下标从哪里开始
 for idx, item in enumerate(arr, 1): # idx从1开始
@@ -53,3 +55,16 @@ defaultdict(lambda: inf) # 默认value为inf
 # 求所有组合
 from itertools import combinations
 res = combinations(nums,k) # nums中取k个的所有组合
+
+
+# Python title() 方法返回"标题化"的字符串,就是说所有单词都是以大写开始，其余字母均为小写(见 istitle())。
+str = "this is string example....wow!!!"
+print(str.title()) # This Is String Example....Wow!!!
+
+
+# 清理记忆化内存
+@cache
+def dfs():
+    pass
+dfs.cache_clear()
+

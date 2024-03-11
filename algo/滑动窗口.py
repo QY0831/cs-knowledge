@@ -1,4 +1,5 @@
 # LEETCODE https://leetcode.cn/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/description/
+# 滑动窗口最大最小值
 class Solution:
     def longestSubarray(self, nums: List[int], limit: int) -> int:
         n = len(nums)
@@ -22,3 +23,21 @@ class Solution:
                     d1.popleft()
             ans = max(ans, right - left + 1)
         return ans
+
+
+# 固定长度的滑动窗口
+# https://leetcode.cn/problems/maximum-points-you-can-obtain-from-cards/description/
+class Solution:
+    def maxScore(self, cardPoints: List[int], k: int) -> int:
+        if k <= 0 or k > len(cardPoints):
+            return
+        left = 0
+        window_size = len(cardPoints) - k
+        min_sum = sum(cardPoints[:window_size])
+        cur_sum = sum(cardPoints[:window_size])
+        for right in range(window_size,len(cardPoints)):
+            cur_sum += cardPoints[right]
+            cur_sum -= cardPoints[left]
+            left += 1
+            min_sum = min(min_sum, cur_sum)
+        return sum(cardPoints) - min_sum
