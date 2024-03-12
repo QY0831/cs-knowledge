@@ -33,3 +33,28 @@ class Solution:
                 for L in range(i - 1, j):
                     f[i][j] = max(f[i][j], f[i-1][L] + (s[j] - s[L]) / (j - L))
         return f[k][n]
+
+
+# https://leetcode.cn/problems/palindrome-partitioning-iii/
+# 分割回文串
+class Solution:
+    def palindromePartition(self, s: str, k: int) -> int:
+        
+        @cache
+        def get_op(i, j):
+            if i >= j:
+                return 0
+            return int(s[i] != s[j]) + get_op(i + 1, j - 1)
+
+        @cache
+        def f(i, j): # 前i个，分j份
+            if i <= 0:
+                return 0
+            if j == 1:
+                return get_op(0, i - 1)
+            res = inf
+            for L in range(j - 1, i):
+                res = min(res, f(L, j - 1) + get_op(L, i - 1))
+            return res
+        
+        return f(len(s), k)
