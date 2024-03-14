@@ -41,3 +41,6 @@ def comb(n: int, k: int) -> int: # n个里选k个
 # 最小公倍数 lcm(Leatest Common Multiple)
 lcm = math.lcm(d1, d2)
 # 能被lcm的整除的，同时能被d1,d2整除
+
+# 组合数：返回不重复且无顺序地从 n 项中选择 k 项的方式总数
+math.comb(n, k)

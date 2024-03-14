@@ -23,7 +23,7 @@ s = sorted(zip(arr1, arr2))
 # 先对集合中的第 1、2 个元素进行操作，得到的结果再与第三个数据用 function 函数运算...
 sum = reduce(lambda x, y: x+y, [1,2,3,4,5]) # 15
 
-# 取集合中最大或最小的n个, key可以定义比较内容
+# 取集合中最大或最小的n个, key可以定义比较内容 （没有sort后切片快）
 res = heapq.nlargest(n, iterable, key=None)
 res = heapq.nsmallest(n, iterable, key=None)
 mn, mn2 = heapq.nsmallest(2, iterable) # mn是最小值， mn2是次小值
