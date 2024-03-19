@@ -4,6 +4,31 @@ for a, b in edges:
     graph[a].add(b)
     graph[b].add(a)
 
+
+# 二叉树建图（节点val不重复）
+g = defaultdict(list)
+def dfs(node, fa):
+    if fa:
+        g[node.val].append(fa.val)
+    if node.left:
+        g[node.val].append(node.left.val)
+        dfs(node.left, node)
+    if node.right:
+        g[node.val].append(node.right.val)
+        dfs(node.right, node)
+dfs(root, None)
+
+
+# 二叉树保存parents
+parents = {}
+def dfs(node: Optional[TreeNode], pa: Optional[TreeNode]) -> None:
+    if node is None: return
+    parents[node] = pa
+    dfs(node.left, node)
+    dfs(node.right, node)
+dfs(root, None)
+
+
 # 朴素广搜
 def search(start, target):
     q = deque([start])

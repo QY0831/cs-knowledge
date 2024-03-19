@@ -30,4 +30,39 @@ class StockSpanner:
         ans =  self.day - self.stack[-1][0]
         self.stack.append((self.day, price))
         return ans
-    
+
+
+# https://leetcode.cn/problems/largest-rectangle-in-histogram/
+# 单调栈：找左侧、右侧的更小元素的位置
+class Solution:
+    def largestRectangleArea(self, heights: List[int]) -> int:
+        # 每个高度h，找到左、右侧最近的高度小于h的柱子
+        n = len(heights)
+        stk = [] # 单调递增
+        pre = []
+        for i, h in enumerate(heights):
+            while stk and h <= heights[stk[-1]]:
+                stk.pop()
+            if stk:
+                pre.append(stk[-1]) # 栈顶就是<且最近的柱子
+            else:
+                pre.append(-1) 
+            stk.append(i)
+        
+        stk = []
+        suf = []
+        for i in range(n - 1, -1, -1):
+            h = heights[i]
+            while stk and h <= heights[stk[-1]]:
+                stk.pop()
+            if stk:
+                suf.append(stk[-1])
+            else:
+                suf.append(n)
+            stk.append(i)
+
+        ans = 0
+        for i in range(n):
+            s = (suf[n - 1 - i] - pre[i] - 1) * heights[i]
+            ans = max(s, ans)
+        return ans

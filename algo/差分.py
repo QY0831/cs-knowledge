@@ -25,3 +25,23 @@ for i, num in enumerate(nums):
     # 修改差分数组
     # 同时更新 diff 和 sum_d
     pass
+
+
+# 拼车： https://leetcode.cn/problems/car-pooling/description/
+class Solution:
+    def carPooling(self, trips: List[List[int]], capacity: int) -> bool:
+        # trips[i]将from到to-1的数都增加numpass
+        # 还原出原数组，并保证所有元素<=capacity
+        # 也可以用Counter代替差分数组，只需更新from, to位置
+        d = Counter()
+        for num, from_, to in trips:
+            d[from_] += num
+            d[to] -= num
+        # 还原差分，等价于key从小到大遍历，累加value
+        s = 0
+        for k in sorted(d):
+            s += d[k]
+            if s > capacity:
+                return False
+        return True
+

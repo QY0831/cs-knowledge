@@ -35,3 +35,6 @@ print(right_index)  # 输出为 6
 # 查找sortedlist中严格大于val的数量
 def helper(arr, val):
     return len(arr) - arr.bisect_right(val)
+
+# 二分查找[low, high]范围内的数的个数
+bisect_right(nums, high) - bisect_left(nums, low) 

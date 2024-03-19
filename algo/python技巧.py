@@ -1,5 +1,7 @@
 from . import *
 
+s = ascii_lowercase # "abcdef..." 得到所有字母
+
 # 取出现频率最多的n个数
 Counter(nums).most_common(n) # 返回值为 [(key1, value1) ... (keyn, valuen)]
 
@@ -22,6 +24,9 @@ s = sorted(zip(arr1, arr2))
 # reduce(function, iterable[, initializer])
 # 先对集合中的第 1、2 个元素进行操作，得到的结果再与第三个数据用 function 函数运算...
 sum = reduce(lambda x, y: x+y, [1,2,3,4,5]) # 15
+
+# 堆化
+heapify(h)
 
 # 取集合中最大或最小的n个, key可以定义比较内容 （没有sort后切片快）
 res = heapq.nlargest(n, iterable, key=None)
@@ -67,4 +72,9 @@ print(str.title()) # This Is String Example....Wow!!!
 def dfs():
     pass
 dfs.cache_clear()
+
+
+# filter
+# filter() 函数用于过滤序列，过滤掉不符合条件的元素，返回由符合条件元素组成的新列表。
+a = filter(lambda x: x % 2 == 0, range(10)) # 过滤掉偶数
 
