@@ -4,13 +4,9 @@ class UnionFind:
         self.size = [1] * n if size is None else size
 
     def find(self, a):
-        a = self.parent[a]
-        acopy = a
-        while a != self.parent[a]:
-            a = self.parent[a]
-        while acopy != a:
-            self.parent[acopy], acopy = a, self.parent[acopy]
-        return a
+        if self.parent[a] != a:
+            self.parent[a] = self.find(self.parent[a])
+        return self.parent[a]
 
     def merge(self, a, b):
         pa, pb = self.find(a), self.find(b)
