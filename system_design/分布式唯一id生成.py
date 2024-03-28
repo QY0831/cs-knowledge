@@ -18,7 +18,7 @@ class Snowflake:
 
         if timestamp == self.last_timestamp:
             self.sequence = (self.sequence + 1) & 4095 # 4095 = 0b111111111111
-            if self.sequence == 0:  # sequence溢出，需要等待timestamp更新
+            if self.sequence == 0:  # 该timestamp的sequence用完，需要等待timestamp更新
                 timestamp = self.wait_next_millis(self.last_timestamp)
         else:
             self.sequence = 0
