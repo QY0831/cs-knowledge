@@ -1,3 +1,52 @@
+MOD = 1_000_000_007
+MX = 100_000
+
+# 100以内的质数
+primes=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]
+
+
+# 埃氏筛求质数
+MX = 10 ** 6 + 10
+primes = []
+is_prime = [True] * MX
+is_prime[1] = False
+for i in range(2, MX):
+    if is_prime[i]:
+        primes.append(i)
+        for j in range(i * i, MX, i):
+            is_prime[j] = False
+
+
+# 直接判断是否是质数
+def is_prime(n: int) -> bool:
+    return all(n % i for i in range(2, isqrt(n) + 1))
+
+
+# 预处理每个数的所有因子，时间复杂度 O(MlogM)，M=1e5
+divisors = [[] for _ in range(MX)]
+for i in range(1, MX):  
+    for j in range(i, MX, i):
+        divisors[j].append(i)
+
+
+# 求一个数的所有质因数（没验证过）
+def prime_factors(n):
+    factors = []
+    i = 2
+
+    while i * i <= n:
+        if n % i:
+            i += 1
+        else:
+            n //= i
+            factors.append(i)
+    
+    if n > 1:
+        factors.append(n)
+    
+    return factors
+
+
 # X里个选2个有多少种组合（不考虑顺序），c(x, 2)
 def c2(x):
     return x * (x - 1) // 2
@@ -5,9 +54,6 @@ def c2(x):
 # 等差数列求和: 首相加末项处以项数除以2
 def sum_arithmetic_seq(start, end, n):
     return (start + end) * n // 2
-
-MOD = 1_000_000_007
-MX = 100_000
 
 # 组合数模板
 fac = [0] * MX # 阶乘
@@ -44,3 +90,4 @@ lcm = math.lcm(d1, d2)
 
 # 组合数：返回不重复且无顺序地从 n 项中选择 k 项的方式总数
 math.comb(n, k)
+

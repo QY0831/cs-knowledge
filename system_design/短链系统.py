@@ -9,10 +9,10 @@ BASE62_CHARS = string.digits + string.ascii_lowercase + string.ascii_uppercase
 # 设tiny url长度为N, 则支持62^N个地址
 
 """       
-输入：长URL --> 长URL在数据库中 --> 生成一个新ID --> 把ID转化为短URL --> 将ID、短URL、长URL保存到数据库
-                |                      
-                |                      
-                +---------是---->返回短URL               
+输入：长URL --> 长URL在数据库中 ---否--> 生成一个新ID --> 把ID转化为短URL --> 将ID、短URL、长URL保存到数据库
+                    |                      
+                    |                      
+                    +-----------是---->返回短URL               
 """
 class TinyURL:
     def __init__(self):

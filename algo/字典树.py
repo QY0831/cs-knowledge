@@ -214,4 +214,3 @@ class WordFilter:
             else:
                 return r1[i]
         return -1
-

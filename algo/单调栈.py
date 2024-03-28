@@ -33,6 +33,7 @@ class StockSpanner:
 
 
 # https://leetcode.cn/problems/largest-rectangle-in-histogram/
+# 最大矩形面积
 # 单调栈：找左侧、右侧的更小元素的位置
 class Solution:
     def largestRectangleArea(self, heights: List[int]) -> int:
