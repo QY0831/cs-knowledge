@@ -139,3 +139,40 @@ class Solution:
                 ans += change * 2 - ans % (change * 2)
             ans += time
         return ans
+    
+
+# BFS找最小环
+# https://leetcode.cn/problems/shortest-cycle-in-a-graph/
+class Solution:
+    def findShortestCycle(self, n: int, edges: List[List[int]]) -> int:
+        g = [[] for _ in range(n)]
+        for a, b in edges:
+            g[a].append(b)
+            g[b].append(a)
+
+        # 枚举所有边，每一次把边 u-v 删除，
+        # 然后求从 u 出发，不经过 u−v 到达 v 的最短路。
+        # 这条最短路，加上被删掉的边 u−v 就是一个环
+        def bfs(u, v):
+            q = deque([u])
+            vis = [False] * n
+            vis[u] = True
+            step = 0
+            while q:
+                size = len(q)
+                for _ in range(size):
+                    x = q.popleft()
+                    if x == v:
+                        return step + 1
+                    for y in g[x]:
+                        if vis[y]:
+                            continue
+                        if x == u and y == v:
+                            continue
+                        q.append(y)
+                        vis[y] = True
+                step += 1
+            return inf
+        
+        ans = min(bfs(u, v) for u, v in edges)
+        return ans if ans != inf else -1

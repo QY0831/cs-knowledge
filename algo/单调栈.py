@@ -13,6 +13,36 @@ def maxWidthRamp(nums: List[int]) -> int:
     return ans
 
 
+
+# 单调递减栈求最长j-i满足 i < j and nums[i] > nums[j]
+# https://leetcode.cn/problems/longest-well-performing-interval/description/
+class Solution:
+    def longestWPI(self, hours: List[int]) -> int:
+        n = len(hours)
+        pre = [0]
+        t = 0
+        for i, x in enumerate(hours):
+            pre.append(pre[-1] + 1 if x > 8 else pre[-1] - 1)
+        # 9 9 6 0 6 6 9
+        # pre[i] -> 0~i-1天 劳累-休闲 天数
+        # pre[j] - pre[i] > 0 -> i~j-1天是劳累的
+        # 在pre数组找最长的一段，满足pre[j]-pre[i]>0，答案为j-i
+
+        # 对于pre中的左端点，可以用单调递减栈保存
+        # j > i, 只有 nums[j] < nums[i] 时，j 才可能是比 i 更优的左端点
+        stk = [0]
+        for i, x in enumerate(pre):
+            if x < pre[stk[-1]]:
+                stk.append(i)
+        # 倒叙遍历pre, 找到大于栈顶的值，即为最长
+        ans = 0
+        for i in range(n, 0, -1):
+            while stk and pre[i] > pre[stk[-1]]:
+                ans = max(ans, i - stk.pop())
+        return ans
+    
+
+
 # 对i位置上一个更大元素距离当前有多远
 # 单调递减栈 - 对于当前nums[i]，栈内无需保存比nums[i]更小的nums[j](j < i)，因为i永远比j适合作为后面元素的答案
 # https://leetcode.cn/problems/online-stock-span/description/
