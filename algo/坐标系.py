@@ -39,3 +39,29 @@ class Solution:
                 if (xCenter - x) ** 2 + (yCenter - y) ** 2 <= d:
                     return True
         return False
+
+
+# 曼哈顿距离转切比雪夫距离
+# https://oi-wiki.org/geometry/distance/
+# A(x1,y1), B(x2,y2)的曼哈顿距离 = |x1 - x2| + |y1 - y2|
+# 等价于 (x1+y1, x1-y1), (x2+y2, x2-y2)两点的切比雪夫距离
+# (x1',y1'),(x2',y2')的切比雪夫距离 = max(|x1' - x2'|, |y1' - y2'|)
+# https://leetcode.cn/problems/minimize-manhattan-distances/
+# 要求任意两点之间的最大曼哈顿距离，即求 max(max(x1-x2), max(y1-y2))
+from sortedcontainers import SortedList
+class Solution:
+    def minimumDistance(self, points: List[List[int]]) -> int:
+        xs = SortedList()
+        ys = SortedList()
+        for x, y in points:
+            xs.add(x + y)
+            ys.add(x - y)
+        ans = inf
+        for x, y in points:
+            x, y = x + y, x - y
+            xs.remove(x)
+            ys.remove(y)
+            ans = min(ans, max(xs[-1] - xs[0], ys[-1] - ys[0]))
+            xs.add(x)
+            ys.add(y)
+        return ans
