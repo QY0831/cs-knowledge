@@ -78,3 +78,10 @@ dfs.cache_clear()
 # filter() 函数用于过滤序列，过滤掉不符合条件的元素，返回由符合条件元素组成的新列表。
 a = filter(lambda x: x % 2 == 0, range(10)) # 过滤掉偶数
 
+
+# The math.isqrt() method rounds a square root number downwards to the nearest integer.
+# Examples to print the square root of different numbers
+print (math.sqrt(10))  # 3.1622776601683795
+
+# Round square root numbers downward to the nearest integer
+print (math.isqrt(10)) # 3

@@ -8,6 +8,18 @@ while n:
 i & (i - 1) == 0
 
 
+# 二进制枚举子集
+nums = [1, 2, 3]
+n = len(nums)
+subsets = []
+for mask in range(1, 1 << n):
+    t = []
+    for i in range(n):
+        if mask & (1 << i): # nums[i]
+            t.append(nums[i])
+    subsets.append(t)
+
+
 # 或值至少为k的最短子数组
 # https://leetcode.cn/problems/shortest-subarray-with-or-at-least-k-ii/description/
 class Solution:
