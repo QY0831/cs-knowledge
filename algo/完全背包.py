@@ -23,3 +23,19 @@ class Solution:
             for x in range(c, amount + 1):
                 f[x] += f[x - c]
         return f[-1]
+
+
+# https://leetcode.cn/problems/combination-sum-iv/description
+class Solution:
+    def combinationSum4(self, nums: List[int], target: int) -> int:
+        # 无限选择物品 -> 完全背包 -> 内循环正向遍历
+        # 求排列 -> 优先遍历背包
+        dp = [0] * (target+1)
+        dp[0] = 1
+        n = len(nums)
+        for i in range(1, target+1):  # 取得i个重量的方法数
+            for j in range(n): 
+                if i - nums[j] >= 0:
+                    dp[i] += dp[i-nums[j]]
+        return dp[target]
+
