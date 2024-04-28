@@ -24,3 +24,31 @@ class UnionFind:
 
     def get_size(self, a):
         return self.size[self.find(a)]
+
+
+
+# 利用并查集合并区间
+# https://leetcode.cn/problems/find-latest-group-of-size-m/
+class Solution:
+    def findLatestStep(self, arr: List[int], m: int) -> int:
+        n = len(arr)
+        uf = UnionFind(n + 1) # 将size初始化为0
+        ans = -1
+        cnt = [0] *  (n + 1)
+        
+        for i, p in enumerate(arr):
+            uf.size[p] = 1
+            cnt[1] += 1 
+            if p > 1 and uf.size[uf.find(p - 1)] > 0:
+                cnt[uf.size[uf.find(p - 1)]] -= 1
+                cnt[uf.size[uf.find(p)]] -= 1
+                uf.merge(p - 1, p)
+                cnt[uf.size[uf.find(p)]] += 1
+            if p < n and uf.size[uf.find(p + 1)] > 0:
+                cnt[uf.size[uf.find(p + 1)]] -= 1
+                cnt[uf.size[uf.find(p)]] -= 1
+                uf.merge(p + 1, p)
+                cnt[uf.size[uf.find(p)]] += 1
+            if cnt[m]:
+                ans = i + 1
+        return ans

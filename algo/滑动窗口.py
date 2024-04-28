@@ -117,3 +117,30 @@ class SlidingWindowAggregation(Generic[E]):
 
     def __len__(self):
         return self._size
+
+
+# 例子：
+# 求gcd为1的最短子数组
+INF = int(1e20)
+
+class Solution:
+    def minOperations(self, nums: List[int]) -> int:
+        if gcd(*nums) != 1:
+            return -1
+        if 1 in nums:
+            return len(nums) - nums.count(1)
+        return minLen(nums) - 1 + len(nums) - 1
+
+
+def minLen(nums: List[int]) -> int:
+    """gcd为1的最短子数组.不存在返回INF."""
+    n = len(nums)
+    S = SlidingWindowAggregation(lambda: 0, gcd)
+    res, n = INF, len(nums)
+    for right in range(n):
+        S.append(nums[right])
+        while S and S.query() == 1:
+            res = min(res, len(S))
+            S.popleft()
+    return res
+
