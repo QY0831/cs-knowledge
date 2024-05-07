@@ -1,6 +1,36 @@
 from . import *
 
 s = ascii_lowercase # "abcdef..." 得到所有字母
+# https://docs.python.org/zh-tw/3.5/library/string.html
+# 此模块中定义的常量为：
+
+# string.ascii_letters
+# 下文所述 ascii_lowercase 和 ascii_uppercase 常量的拼连。 该值不依赖于语言区域。
+
+# string.ascii_lowercase
+# 小写字母 'abcdefghijklmnopqrstuvwxyz'。 该值不依赖于语言区域，不会发生改变。
+
+# string.ascii_uppercase
+# 大写字母 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'。 该值不依赖于语言区域，不会发生改变。
+
+# string.digits
+# 字符串 '0123456789'。
+
+# string.hexdigits
+# 字符串 '0123456789abcdefABCDEF'。
+
+# string.octdigits
+# 字符串 '01234567'。
+
+# string.punctuation
+# 由在 C 语言区域中被视为标点符号的 ASCII 字符组成的字符串。
+
+# string.printable
+# 由被视为可打印符号的 ASCII 字符组成的字符串。 这是 digits, ascii_letters, punctuation 和 whitespace 的总和。
+
+# string.whitespace
+# 由被视为空白符号的 ASCII 字符组成的字符串。 其中包括空格、制表、换行、回车、进纸和纵向制表符。
+
 
 # 取出现频率最多的n个数
 Counter(nums).most_common(n) # 返回值为 [(key1, value1) ... (keyn, valuen)]
@@ -81,7 +111,19 @@ a = filter(lambda x: x % 2 == 0, range(10)) # 过滤掉偶数
 
 # The math.isqrt() method rounds a square root number downwards to the nearest integer.
 # Examples to print the square root of different numbers
-print (math.sqrt(10))  # 3.1622776601683795
+print(math.sqrt(10))  # 3.1622776601683795
 
+# 开方并向下取整
 # Round square root numbers downward to the nearest integer
-print (math.isqrt(10)) # 3
+print(math.isqrt(10)) # 3
+
+
+# acm模式：读取输入
+import sys
+while True:
+    s = input().split() # 一行一行读取
+    a, b = int(s[0]), int(s[1])
+    if not a and not b: # 遇到 0, 0 则中断
+        break
+    print(a + b)
+
