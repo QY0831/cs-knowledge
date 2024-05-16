@@ -33,3 +33,18 @@ class Solution:
             elif f[i] == max_len:
                 ans += cnt[i]
         return ans
+
+
+# 二维LIS
+# 俄罗斯套娃信封问题: https://leetcode.cn/problems/russian-doll-envelopes/
+class Solution:
+    def maxEnvelopes(self, envelopes: List[List[int]]) -> int:
+        envelopes.sort(key=lambda x: (x[0], -x[1]))
+        t = []
+        for w, h in envelopes:
+            i = bisect_left(t, h)
+            if i == len(t):
+                t.append(h)
+            else:
+                t[i] = h
+        return len(t)
