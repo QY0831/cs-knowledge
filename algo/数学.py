@@ -91,3 +91,20 @@ lcm = math.lcm(d1, d2)
 # 组合数：返回不重复且无顺序地从 n 项中选择 k 项的方式总数
 math.comb(n, k)
 
+
+# https://leetcode.cn/problems/find-the-number-of-good-pairs-ii/description/
+# 求nums1[i] % (nums2[j] * k) == 0的个数
+class Solution:
+    def numberOfPairs(self, nums1: List[int], nums2: List[int], k: int) -> int:
+        cnt = Counter()
+        for x in nums1:
+            if x % k != 0:
+                continue
+            x //= k
+            for d in range(1, isqrt(x) + 1): # x的因子
+                if x % d != 0:
+                    continue
+                cnt[d] += 1
+                if d * d < x:
+                    cnt[x // d] += 1
+        return sum(cnt[y] for y in nums2)

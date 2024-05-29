@@ -1,77 +1,73 @@
 # 线段树可以在 O(log N) 的时间复杂度内实现单点修改、区间修改、区间查询（区间求和，求区间最大值，求区间最小值）等操作。
+# Atc template
+import typing
 
-class SegmentTree:
-    
-    def __init__(self, n: int) -> None:
-        self.sum = [0] * (4 * n)
-        
-    def add(self, o: int, l: int, r: int, idx: int, val: int): 
-        # o: 当前节点的编号
-        # 左子树编号: 2 * o
-        # 右子树编号: 2 * o + 1
-        # l, r: 当前节点对应的区间
-        if l == r:
-            self.sum[l] += val
-            return
-        mid = (l + r) // 2
-        if idx <= mid:
-            self.add(o * 2, l, mid, idx, val)
-        else:
-            self.add(o * 2 + 1, mid + 1, r, idx, val)
-        self.sum[o] = self.sum[o * 2] + self.sum[o * 2 + 1]
-    
-    def query(self, o: int, l: int, r: int, L: int, R: int) -> int:
-        # L, R: 查询区间
-        if L <= l and r <= R:
-            return self.sum[o] # o被完全包含在[L, R]中
-        sum_ = 0
-        mid = (l + r) // 2
-        if L <= mid:
-            sum_ += self.query(o * 2, l, mid, L, R)
-        if R > mid:
-            sum_ += self.query(o * 2 + 1, mid + 1, r, L, R)
-        return sum_
+class SegTree:
+    def __init__(self,
+                 op: typing.Callable[[typing.Any, typing.Any], typing.Any],
+                 e: typing.Any,
+                 v: typing.Union[int, typing.List[typing.Any]]) -> None:
+        self._op = op # 线段树的合并操作，例如：max,add,gcd
+        self._e = e # 线段树的值的幺元，默认大小(初始值)
 
+        if isinstance(v, int): # 原数组（如果输入int则表示数组长度，用幺元生成数组）
+            v = [e] * v
 
-# 线段树求最长递增子序列
-# https://leetcode.cn/problems/longest-increasing-subsequence-ii/description/
-# 利用线段树维护以j结尾的最大子序列长度(求区间最大值)
-class Solution:
+        self._n = len(v)
+        self._log = self._ceil_pow2(self._n)
+        self._size = 1 << self._log
+        self._d = [e] * (2 * self._size)
 
-    def __init__(self):
-        self.mx = None
+        for i in range(self._n):
+            self._d[self._size + i] = v[i]
+        for i in range(self._size - 1, 0, -1):
+            self._update(i)
 
-    def update(self, o: int, l: int, r: int, idx: int, val: int): 
-        if l == r:
-            self.mx[o] = val
-            return
-        mid = (l + r) // 2
-        if idx <= mid:
-            self.update(o * 2, l, mid, idx, val)
-        else:
-            self.update(o * 2 + 1, mid + 1, r, idx, val)
-        self.mx[o] = max(self.mx[o * 2], self.mx[o * 2 + 1])
+    def _ceil_pow2(self, n: int) -> int:
+        x = 0
+        while (1 << x) < n:
+            x += 1
 
-    def query(self, o: int, l: int, r: int, L: int, R: int) -> int:
-        if L <= l and r <= R:
-            return self.mx[o]
-        res = 0
-        mid = (l + r) // 2
-        if L <= mid:
-            res = self.query(o * 2, l, mid, L, R)
-        if R > mid:
-            res = max(res, self.query(o * 2 + 1, mid + 1, r, L, R))
-        return res
+        return x
 
-    def lengthOfLIS(self, nums: List[int], k: int) -> int:
-        # f[i][j] = max(f[i-1][j']) + 1
-        # j - k <= j' < j
-        u = max(nums) # 数组范围[1,u], n = u, 线段树size=n * 4
-        self.mx = [0] * (4 * u) # 保存j对应的最大子序列长度
-        for x in nums:
-            if x == 1:
-                self.update(1, 1, u, 1, 1) # 以1为结尾的最大子序列长度必为1
-            else:
-                res = 1 + self.query(1, 1, u, max(x - k, 1), x - 1) # 查询区间内最大长度
-                self.update(1, 1, u, x, res) # 更新j=x对应的最大值
-        return self.mx[1] # 根节点对应整个数组对应的最大长度
+    # 单点修改，修改a[p] = x，复杂度：o(logn)
+    def set(self, p: int, x: typing.Any) -> None:
+        assert 0 <= p < self._n
+
+        p += self._size
+        self._d[p] = x
+        for i in range(1, self._log + 1):
+            self._update(p >> i)
+
+    # 单点查询，返回a[p]，复杂度：o(1)
+    def get(self, p: int) -> typing.Any:
+        assert 0 <= p < self._n
+
+        return self._d[p + self._size]
+
+    # 区间查询，返回op(a[l],……,a[r-1])，复杂度：o(logn)
+    def prod(self, left: int, right: int) -> typing.Any:
+        assert 0 <= left <= right <= self._n
+        sml = self._e
+        smr = self._e
+        left += self._size
+        right += self._size
+
+        while left < right:
+            if left & 1:
+                sml = self._op(sml, self._d[left])
+                left += 1
+            if right & 1:
+                right -= 1
+                smr = self._op(self._d[right], smr)
+            left >>= 1
+            right >>= 1
+
+        return self._op(sml, smr)
+
+    # 返回op(a[0], ..., a[n - 1])，复杂度：o(1)
+    def all_prod(self) -> typing.Any:
+        return self._d[1]
+
+    def _update(self, k: int) -> None:
+        self._d[k] = self._op(self._d[2 * k], self._d[2 * k + 1])
