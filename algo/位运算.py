@@ -89,7 +89,6 @@ class Solution:
 # https://leetcode.cn/problems/find-a-value-of-a-mysterious-function-closest-to-target/
 class Solution:
     def closestToTarget(self, arr: List[int], target: int) -> int:
-        n = len(arr)
         s = set()
         ans = inf
         for x in arr:
