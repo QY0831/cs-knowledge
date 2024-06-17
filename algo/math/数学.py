@@ -108,3 +108,15 @@ class Solution:
                 if d * d < x:
                     cnt[x // d] += 1
         return sum(cnt[y] for y in nums2)
+
+
+# https://leetcode.cn/problems/count-pairs-that-form-a-complete-day-ii/description/
+# 求 (nums[i] + nums[j]) % 24 = 0 的组合数
+class Solution:
+    def countCompleteDayPairs(self, hours: List[int]) -> int:
+        ans = 0
+        cnt = [0] * 24
+        for t in hours:
+            ans += cnt[(24 - t % 24) % 24]
+            cnt[t % 24] += 1
+        return ans

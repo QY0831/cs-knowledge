@@ -2,7 +2,6 @@
 from sortedcontainers import SortedList
 class Solution:
     def countSmaller(self, nums: List[int]) -> List[int]:
-
         n = len(nums)
         sl = SortedList([])
         ans = []

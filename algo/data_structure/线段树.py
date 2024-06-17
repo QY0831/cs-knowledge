@@ -71,3 +71,54 @@ class SegTree:
 
     def _update(self, k: int) -> None:
         self._d[k] = self._op(self._d[2 * k], self._d[2 * k + 1])
+
+
+# https://leetcode.cn/problems/range-sum-query-mutable/
+# 307. 区域和检索 - 数组可修改
+class NumArray:
+
+    def __init__(self, nums: List[int]):
+
+        def op(p, q):
+            return p + q
+
+        self.t = SegTree(op, 0, nums)
+
+    def update(self, index: int, val: int) -> None:
+        self.t.set(index, val)
+
+    def sumRange(self, left: int, right: int) -> int:
+        return self.t.prod(left, right + 1)
+
+
+# https://leetcode.cn/problems/peaks-in-array/
+# 3187. 数组中的峰值
+class Solution:
+    def countOfPeaks(self, nums: List[int], queries: List[List[int]]) -> List[int]:
+        # 单点修改：nums[idx] = val
+        # 区间查询：nums中[l..r]中峰值元素的数目
+        def op(a, b):
+            return a + b
+        n = len(nums)
+        p = [0] * n # p[i]=1 是峰值；p[i]=0 不是峰值
+        for i in range(1, n - 1):
+            if nums[i - 1] < nums[i] and nums[i] > nums[i + 1]:
+                p[i] = 1
+        seg = SegTree(op, 0, p)
+
+        ans = []
+        for x, y, z in queries:
+            if x == 1:
+                if y + 1 >= z: # 区间长度至少为3
+                    ans.append(0)
+                else:
+                    ans.append(seg.prod(y + 1, z)) # 按题意，头、尾不计入
+            else:
+                nums[y] = z
+                for i in (y - 1, y, y + 1): # 更新受影响的3个位置是否为峰值
+                    if 0 < i < n - 1:
+                        if nums[i - 1] < nums[i] and nums[i] > nums[i + 1]:
+                            seg.set(i, 1)
+                        else:
+                            seg.set(i, 0)
+        return ans
