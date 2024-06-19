@@ -1,3 +1,6 @@
+# 一般定义f[i][j]为前缀a[:i]在状态j下的最优值。一般j很小，可以通过维护几个状态来优化空间。
+# 经典题目是【买卖股票】系列
+
 # https://leetcode.cn/problems/best-time-to-buy-and-sell-stock-iii/description/
 # 买卖股票的最佳时机 III
 # 最多可以完成 两笔 交易
