@@ -1,3 +1,59 @@
+# 计算划分个数
+# 计算最少（最多）可以划分的子数组个数、方案数等。
+# 一般定义f[i]表示前缀a[:i]在约束下，分割出最少（最多）的子数组个数
+# 枚举最后一个子数组的左端点L, 从f[L]转移到f[i]，并考虑a[L:j]对最优解的影响。
+
+# https://leetcode.cn/problems/partition-string-into-minimum-beautiful-substrings/
+# 2767. 将字符串分割为最少的美丽子字符串
+ss = set()
+MX = 1 << 16
+i = 0
+while True:
+    x = pow(5, i)
+    if x > MX:
+        break
+    ss.add(bin(x)[2:])
+    i += 1
+
+class Solution:
+    def minimumBeautifulSubstrings(self, s: str) -> int:
+        n = len(s)
+        f = [inf] * (n + 1)
+        f[0] = 0
+        for i in range(1, n + 1):
+            for L in range(i):
+                if s[L] != '0' and f[L] != inf and s[L:i] in ss:
+                    f[i] = min(f[i], f[L] + 1)
+        return f[-1] if f[-1] != inf else -1
+
+
+# 计算可划分的组数
+# https://leetcode.cn/problems/minimum-substring-partition-of-equal-character-frequency/description/
+class Solution:
+    def minimumSubstringsInPartition(self, s: str) -> int:
+        # f[i]: 前i个字符最少划分
+        # f[i] = min(f[j] + 1 if s[j+1:i] is valid)
+        n = len(s)
+        f = [inf] * (n + 1)
+        f[0] = 0
+        for i in range(1, n + 1): # f[i]
+            cnt = Counter()
+            mx = c_cnt = 0  
+            # 在s[j:i]
+            # mx: 同一种字母最多出现几次； 
+            # c_cnt：出现几种字母
+            for j in range(i - 1, -1, -1): # f[j]
+                cnt[s[j]] += 1
+                if cnt[s[j]] == 1:
+                    c_cnt += 1
+                if cnt[s[j]] > mx:
+                    mx = cnt[s[j]]
+
+                if mx * c_cnt == i - j and f[j] + 1 < f[i]:
+                    f[i] = f[j] + 1
+        return f[-1]
+
+
 # https://leetcode.cn/problems/maximum-strength-of-k-disjoint-subarrays/description/
 # 计算划分的k个不相交子数组的最大能量和
 # 能量和：x 个子数组的能量值： sum[1] * x - sum[2] * (x - 1) + sum[3] * (x - 2) - sum[4] * (x - 3) + ... + sum[x] * 1
@@ -60,30 +116,3 @@ class Solution:
             return res
         
         return f(len(s), k)
-
-
-# 计算可划分的组数
-# https://leetcode.cn/problems/minimum-substring-partition-of-equal-character-frequency/description/
-class Solution:
-    def minimumSubstringsInPartition(self, s: str) -> int:
-        # f[i]: 前i个字符最少划分
-        # f[i] = min(f[j] + 1 if s[j+1:i] is valid)
-        n = len(s)
-        f = [inf] * (n + 1)
-        f[0] = 0
-        for i in range(1, n + 1): # f[i]
-            cnt = Counter()
-            mx = c_cnt = 0  
-            # 在s[j:i]
-            # mx: 同一种字母最多出现几次； 
-            # c_cnt：出现几种字母
-            for j in range(i - 1, -1, -1): # f[j]
-                cnt[s[j]] += 1
-                if cnt[s[j]] == 1:
-                    c_cnt += 1
-                if cnt[s[j]] > mx:
-                    mx = cnt[s[j]]
-
-                if mx * c_cnt == i - j and f[j] + 1 < f[i]:
-                    f[i] = f[j] + 1
-        return f[-1]
