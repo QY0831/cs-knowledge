@@ -19,6 +19,21 @@ def diameter(edges: List[List[int]], ) -> int:
     return res
 
 
+def diameterOfBinaryTree(root: Optional[TreeNode]) -> int:
+    res = 0
+    def dfs(x):
+        if not x:
+            return 0
+        nonlocal res
+        left = dfs(x.left)
+        right = dfs(x.right)
+        res = max(res, left + right + 1)
+        return max(left, right) + 1
+    
+    dfs(root)
+    return res - 1
+
+
 # 合并两棵树后的最小直径
 # 经典结论：两棵树合并后，新直径的两个端点，一定是原来两棵树直径的四个端点里的其中两个。
 # 如果新直径不经过合并边，那么它就是原来两个直径中的较大值。
