@@ -4,13 +4,14 @@ class StringHash:
         n = len(s)
         self.BASE = BASE = 131313  # 进制 31,131,13131,13331,131313
         self.MOD = MOD = 10 ** 13 + 7  # 10**13+37 ,10**13+51 ,10**13+99 ,10**13+129 ,10**13+183
+        # 卡常时尝试：MOD = 121499449， 并调小BASE  
         self.h = h = [0] * (n + 1)
         self.p = p = [1] * (n + 1)
         for i in range(1, n + 1):
             p[i] = (p[i - 1] * BASE) % MOD
             h[i] = (h[i - 1] * BASE + ord(s[i - 1])) % MOD
 
-    # 用O(1)时间获取闭区间[l,r]（即s[l:r]）的哈希值，比切片要快
+    # 用O(1)时间获取闭区间[l,r]（即s[l:r+1]）的哈希值，比切片要快
     def get_hash(self, l, r):
         return (self.h[r+1] - self.h[l] * self.p[r - l + 1]) % self.MOD
     
@@ -26,3 +27,28 @@ def isSubsequence(s: str, t: str) -> bool:
             if i == len(s):
                 return True
     return False
+
+
+# https://leetcode.cn/problems/construct-string-with-minimum-cost/description/
+# 3213. 最小代价构造字符串
+class Solution:
+    def minimumCost(self, target: str, words: List[str], costs: List[int]) -> int:
+        n = len(target)
+        min_cost = defaultdict(lambda: inf)
+        for w, c in zip(words, costs):
+            h = StringHash(w).h[-1]
+            min_cost[h] = min(min_cost[h], c)
+        sh = StringHash(target)
+        f = [0] + [inf] * n
+
+        sorted_lens = sorted(set(map(len, words)))
+
+        for i in range(1, n + 1):
+            for sl in sorted_lens:
+                if sl > i:
+                    break
+                sub_hash = sh.get_hash(i - sl, i - 1)
+                res = f[i - sl] + min_cost[sub_hash]
+                if res < f[i]:
+                    f[i] = res
+        return -1 if f[n] == inf else f[n]

@@ -67,7 +67,7 @@ class Solution:
     def smallestSubarrays(self, nums: List[int]) -> List[int]:
         n = len(nums)
         ans = [0] * n
-        ors = []  # 按位或的值，对应子数组的右端点的最小值
+        ors = []  # (按位或的值，对应子数组的右端点的最小值)
         for i in range(n - 1, -1, -1):
             num = nums[i]
             ors.append([0, i])
@@ -97,3 +97,102 @@ class Solution:
             for d in s:
                 ans = min(ans, abs(target - d))
         return ans
+    
+
+# logTrick: 
+# https://github.com/981377660LMT/algorithm-study/blob/0f29c59a3d7fb8c56ea21fa54b6ed8b5682e34c9/21_%E4%BD%8D%E8%BF%90%E7%AE%97/logTrick/logTrick.py#L7
+def logTrick(
+    nums: List[int],
+    op: Callable[[int, int], int],
+    f: Optional[Callable[[List[Tuple[int, int, int]], int], None]] = None,
+) -> DefaultDict[int, int]:
+    """
+    将 `nums` 的所有非空子数组的元素进行 `op` 操作，返回所有不同的结果和其出现次数.
+
+    Args:
+        nums: 1 <= len(nums) <= 1e5.
+        op: 与/或/gcd/lcm 中的一种操作，具有单调性.
+    
+        定义f对当前下标为止的结果进行处理：(optional)
+        f: (interval: List[Tuple[int, int, int]], right: int) -> None
+        interval: [leftStart, leftEnd, value]
+        数组的右端点为right.
+        interval 的 leftStart/leftEnd 表示子数组的左端点left的范围.
+        interval 的 value 表示该子数组 arr[left,right] 的 op 结果.
+
+    Returns:
+        所有不同的结果和其出现次数
+    """
+    res = defaultdict(int)
+    dp = []
+    for pos, cur in enumerate(nums):
+        for v in dp:
+            v[2] = op(v[2], cur) # 更新value
+        dp.append([pos, pos + 1, cur]) # 新增interval [pos, pos + 1, cur]，只包含当前元素
+
+        ptr = 0
+        for v in dp[1:]: 
+            if dp[ptr][2] != v[2]: # op结果不同，
+                ptr += 1
+                dp[ptr] = v
+            else:
+                dp[ptr][1] = v[1]
+        dp = dp[: ptr + 1]
+
+        for v in dp:
+            res[v[2]] += v[1] - v[0]
+            
+        if f is not None:
+            f(dp, pos)
+
+    return res
+
+# 简化版本：
+def logTrick(nums, op):
+    res = defaultdict(int)
+    dp = []
+    for pos, cur in enumerate(nums):
+        for v in dp:
+            v[2] = op(v[2], cur)
+        dp.append([pos, pos + 1, cur])
+
+        ptr = 0
+        for v in dp[1:]: 
+            if dp[ptr][2] != v[2]: 
+                ptr += 1
+                dp[ptr] = v
+            else:
+                dp[ptr][1] = v[1]
+        dp = dp[: ptr + 1]
+
+        for v in dp:
+            res[v[2]] += v[1] - v[0]
+    return res
+    
+    
+if __name__ == "__main__":
+    from operator import and_, or_
+    from math import gcd, lcm
+
+    # 1521. 找到最接近目标值的函数值
+    class Solution2:
+        def closestToTarget(self, arr: List[int], target: int) -> int:
+            counter = logTrick(arr, lambda x, y: x & y)
+            return min(abs(k - target) for k in counter)
+
+    # 2941. 子数组的最大 GCD-Sum
+    # https://leetcode.cn/problems/maximum-gcd-sum-of-a-subarray/description/
+    class Solution:
+        def maxGcdSum(self, nums: List[int], k: int) -> int:
+            def f(interval: List[Tuple[int, int, int]], right: int) -> None:
+                nonlocal res
+                for start, _, gcd_ in interval:
+                    len_ = right - start + 1
+                    if len_ >= k:
+                        res = max(res, gcd_ * (preSum[right + 1] - preSum[start]))
+
+            res = 0
+            preSum = list(accumulate(nums, initial=0))
+            logTrick(nums, gcd, f)
+            return res
+
