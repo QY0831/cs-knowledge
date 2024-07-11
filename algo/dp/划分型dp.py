@@ -25,6 +25,32 @@ class Solution:
                 if s[L] != '0' and f[L] != inf and s[L:i] in ss:
                     f[i] = min(f[i], f[L] + 1)
         return f[-1] if f[-1] != inf else -1
+    
+
+# https://leetcode.cn/problems/filling-bookcase-shelves/description/
+# 1105. 填充书架
+class Solution:
+    def minHeightShelves(self, books: List[List[int]], shelfWidth: int) -> int:
+        n = len(books)
+        f = [inf] * (n + 1)
+        f[0] = 0
+        for i in range(1, n + 1):
+            t, h = books[i - 1]
+            sum_width = t
+            max_h = h
+            f[i] = f[i - 1] + h
+            for L in range(i - 2, -1, -1):
+                # [L:i]的书放在一层
+                t, h = books[L]
+                if h > max_h: 
+                    max_h = h
+                sum_width += t
+                if sum_width > shelfWidth:
+                    break
+                if f[L] + max_h < f[i]:
+                    f[i] = f[L] + max_h
+        return f[-1]
+
 
 
 # 计算可划分的组数

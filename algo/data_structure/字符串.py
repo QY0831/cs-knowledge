@@ -1,3 +1,52 @@
+# 判断s是否t的子序列
+def isSubsequence(s: str, t: str) -> bool:
+    i = 0
+    if not s:
+        return True
+    for c in t:
+        if s[i] == c:
+            i += 1
+            if i == len(s):
+                return True
+    return False
+
+# 判断回文
+def is_palindrome(s: str) -> bool:
+    i = 0
+    j = len(s) - 1
+    while i < j:
+        if s[i] != s[j]:
+            return False
+        i += 1
+        j -= 1
+    return True
+
+# 得到所有回文子串
+class Solution(object):
+    def __init__(self):
+        self.ans = 0
+    
+    def countSubstrings(self, s):
+        """
+        :type s: str
+        :rtype: int
+        """
+        # 以每个位置作为回文中心，尝试扩展
+        # 回文中心有2种形式，1个数或2个数
+        n = len(s)
+        
+        def spread(left, right):
+            while left >= 0 and right <= n-1 and s[left] == s[right]:
+                left -= 1
+                right += 1
+                self.ans += 1
+        
+        for i in range(n):
+            spread(i, i)
+            spread(i, i+1)
+        
+        return self.ans
+
 class StringHash:
     # 字符串哈希，用O(n)时间预处理，用O(1)时间获取段的哈希值
     def __init__(self, s):
@@ -15,19 +64,6 @@ class StringHash:
     def get_hash(self, l, r):
         return (self.h[r+1] - self.h[l] * self.p[r - l + 1]) % self.MOD
     
-
-# 判断s是否t的子序列
-def isSubsequence(s: str, t: str) -> bool:
-    i = 0
-    if not s:
-        return True
-    for c in t:
-        if s[i] == c:
-            i += 1
-            if i == len(s):
-                return True
-    return False
-
 
 # https://leetcode.cn/problems/construct-string-with-minimum-cost/description/
 # 3213. 最小代价构造字符串
