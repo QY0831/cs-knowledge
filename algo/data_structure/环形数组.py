@@ -27,3 +27,39 @@ class Solution:
             if i >= n and cnt >= k:
                 ans += 1
         return ans
+
+
+# 2134. 最少交换次数来组合所有的 1 II
+# https://leetcode.cn/problems/minimum-swaps-to-group-all-1s-together-ii/description/
+# 难度：1748
+# 将数组中的所有 1 聚集在一起需要的最少交换次数。
+# 算法：滑动窗口
+class Solution:
+    def minSwaps(self, nums: List[int]) -> int:
+        n = len(nums)
+        left = right = 0
+        ones = sum(nums)
+        zeros = n - ones
+        mx1 = mx0 = cnt1 = cnt0 = 0
+        while right < n:
+            cnt1 += nums[right]
+            right += 1
+            if right - left > ones:
+                cnt1 -= nums[left]
+                left += 1
+            if cnt1 > mx1:
+                mx1 = cnt1
+
+        left = right = 0
+        while right < n:
+            if nums[right] == 0:
+                cnt0 += 1
+            right += 1
+            if right - left > zeros:
+                if nums[left] == 0:
+                    cnt0 -= 1
+                left += 1
+            if cnt0 > mx0:
+                mx0 = cnt0
+        
+        return min(ones - mx1, zeros - mx0)

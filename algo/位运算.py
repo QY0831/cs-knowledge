@@ -18,6 +18,24 @@ for mask in range(1, 1 << n):
         if mask & (1 << i): # nums[i]
             t.append(nums[i])
     subsets.append(t)
+    
+    
+# 2401. 最长优雅子数组
+# https://leetcode.cn/problems/longest-nice-subarray/description/
+# 难度：1749
+# 滑动窗口+位运算：求最长的子数组，满足子数组中任意两个数AND=0。
+class Solution:
+    def longestNiceSubarray(self, nums: List[int]) -> int:
+        left = right = ans = mask = 0
+        n = len(nums)
+        while right < n:
+            while mask & nums[right]:
+                mask ^= nums[left] # 异或=删除
+                left += 1
+            ans = max(ans, right - left + 1)
+            mask |= nums[right] # 或=添加
+            right += 1
+        return ans
 
 
 # 或值至少为k的最短子数组
