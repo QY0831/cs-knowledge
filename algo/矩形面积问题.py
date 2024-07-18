@@ -87,3 +87,28 @@ class Solution:
             for j in range(n - 1, -1, -1):
                 ans = max(ans, matrix[i][j] * (n - j))
         return ans
+
+
+# https://leetcode.cn/problems/minimum-area-rectangle/description/
+# 939. 最小面积矩形
+# 难度：1752
+# 给出点集，求最小面积矩形
+# 解法：按x轴排序，对于每个x，按y轴排序，遍历(y1, y2)，查看之前是否有相同的y，计算面积
+class Solution:
+    def minAreaRect(self, points: List[List[int]]) -> int:
+        cols = defaultdict(list)
+        for x, y in points:
+            cols[x].append(y)
+        ans = inf
+        pre = dict() # key: y1, y2 val: x
+        for x in sorted(cols):
+            col = cols[x]
+            col.sort()
+            for j, y2 in enumerate(col):
+                for i in range(j):
+                    y1 = col[i]
+                    if (y1, y2) in pre:
+                        prex = pre[(y1, y2)]
+                        ans = min(ans, (y2 - y1) * (x - prex))
+                    pre[(y1, y2)] = x
+        return ans if ans != inf else 0
