@@ -1,11 +1,13 @@
 # low-bit: 得到最低位的1（2次幂）
+n = 72 # (1001000), low-bit=8(1000)
 while n:
     lb = n & -n # 得到最低位的1
     n ^= lb # 删除最低位的1
 
 
 # 2的整数次幂满足
-i & (i - 1) == 0
+x = 64
+x & (x - 1) == 0
 
 
 # 二进制枚举子集
@@ -18,6 +20,19 @@ for mask in range(1, 1 << n):
         if mask & (1 << i): # nums[i]
             t.append(nums[i])
     subsets.append(t)
+    
+    
+# https://leetcode.cn/problems/minimum-impossible-or/description/
+# 2568. 最小无法得到的或值
+# 难度：1754
+class Solution:
+    def minImpossibleOR(self, nums: List[int]) -> int:
+        mask = 0
+        for x in nums:
+            if (x & (x - 1)) == 0:  # x 是 2 的幂次
+                mask |= x
+        mask = ~mask
+        return mask & -mask  # lowbit
 
 
 # https://leetcode.cn/problems/design-bitset/description/
