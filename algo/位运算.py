@@ -1,7 +1,7 @@
 # low-bit: 得到最低位的1（2次幂）
 while n:
-    lb = n & -n
-    n ^= lb
+    lb = n & -n # 得到最低位的1
+    n ^= lb # 删除最低位的1
 
 
 # 2的整数次幂满足
@@ -18,7 +18,50 @@ for mask in range(1, 1 << n):
         if mask & (1 << i): # nums[i]
             t.append(nums[i])
     subsets.append(t)
-    
+
+
+# https://leetcode.cn/problems/design-bitset/description/
+# 2166. 设计位集
+# 难度：1751
+# 解法：懒标记，除toString为O(n)外，其余操作均为O(1)
+class Bitset:
+
+    def __init__(self, size: int):
+        self.size = size
+        self.s = [0] * size
+        self.fliped = 0 # 标记是否翻转
+        self.cnt1 = 0
+
+    def fix(self, idx: int) -> None: 
+        if self.s[idx] == self.fliped:
+            self.s[idx] ^= 1
+            self.cnt1 += 1
+ 
+    def unfix(self, idx: int) -> None:
+        if self.s[idx] != self.fliped:
+            self.s[idx] ^= 1
+            self.cnt1 -= 1
+
+    def flip(self) -> None:
+        self.fliped = not self.fliped
+        self.cnt1 = self.size - self.cnt1
+
+    def all(self) -> bool:
+        return self.cnt1 == self.size
+
+    def one(self) -> bool:
+        return self.cnt1 > 0
+
+    def count(self) -> int:
+        return self.cnt1
+
+    def toString(self) -> str:
+        t = self.s[:]
+        if self.fliped:
+            for i in range(self.size):
+                t[i] ^= 1
+        return ''.join(map(str, t))
+        
     
 # 2401. 最长优雅子数组
 # https://leetcode.cn/problems/longest-nice-subarray/description/
