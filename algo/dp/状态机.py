@@ -59,3 +59,22 @@ class Solution:
             f0, f1 = max(f0, f1 - p), max(f1, f0 + p - fee)
         return f1
 
+
+
+# https://leetcode.cn/problems/greatest-sum-divisible-by-three/description/
+# 1262. 可被三整除的最大和
+class Solution:
+    def maxSumDivThree(self, nums: List[int]) -> int:
+        f0 = 0 # mod=0,1,2的最大和
+        f1 = f2 = -inf
+        for x in nums:
+            m = x % 3
+            if m == 0:
+                f0 += x
+                f1 += x
+                f2 += x
+            elif m == 1:
+                f0, f1, f2 = max(f0, f2 + x), max(f1, f0 + x), max(f2, f1 + x)
+            else:
+                f0, f1, f2 = max(f0, f1 + x), max(f1, f2 + x), max(f2, f0 + x)
+        return f0
