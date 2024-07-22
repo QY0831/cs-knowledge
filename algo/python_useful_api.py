@@ -92,6 +92,10 @@ from itertools import combinations
 res = combinations(nums,k) # nums中取k个的所有组合
 
 
+from more_itertools import distinct_permutations
+distinct_permutations(nums) # 返回所有不同的排列
+
+
 # Python title() 方法返回"标题化"的字符串,就是说所有单词都是以大写开始，其余字母均为小写(见 istitle())。
 str = "this is string example....wow!!!"
 print(str.title()) # This Is String Example....Wow!!!
