@@ -43,7 +43,7 @@ class UnionFind:
         return list(set(self.find(i) for i in range(self.n)))
 
     def __repr__(self) -> str:
-        return "\n".join(f"{root}: {member}" for root, member in self.getGroups().items())
+        return "\n".join(f"{root}: {member}" for root, member in self.get_groups().items())
 
     def __len__(self) -> int:
         return self.part
@@ -96,3 +96,29 @@ class Solution:
                 ans = i + 1
         return ans
 
+
+# https://leetcode.cn/problems/check-if-the-rectangle-corner-is-reachable/description/
+# 3235. 判断矩形的两个角落是否可达
+# 判断是否有一条路径从左上角到右下角，不经过任何圆的内部和边界
+# 解法：判断左上边界和右下边界是否连通
+class Solution:
+    def canReachCorner(self, X: int, Y: int, circles: List[List[int]]) -> bool:
+        # n个圆标记为 0...n-1
+        # 上边界+左边界标记为 n
+        # 下边界+右边界标记为 n+1
+        # 并查集连边，判断n,n+1是否连通
+        n = len(circles)
+        uf = UnionFind(n + 2)
+        for i, (ox, oy, r) in enumerate(circles):
+            if ox <= r or oy + r >= Y: # 与左或上连通
+                uf.merge(i, n)
+            if ox + r >= X or oy <= r: # 与下或右连通
+                uf.merge(i, n+1)
+            for j in range(i + 1, n):
+                # 与其他圆相交或相切: 圆心距离 <= 半径距离之和
+                qx, qy, qr = circles[j]
+                if (ox - qx) * (ox - qx) + (oy - qy) * (oy - qy) <= (r + qr) * (r + qr):
+                    uf.merge(i, j)
+            if uf.is_connected(n, n + 1):
+                return False
+        return True

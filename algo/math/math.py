@@ -1,52 +1,6 @@
 MOD = 1_000_000_007
 MX = 100_000
 
-# 100以内的质数
-primes=[2,3,5,7,11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]
-
-
-# 埃氏筛求质数
-MX = 10 ** 6 + 10
-primes = []
-is_prime = [True] * MX
-is_prime[1] = False
-for i in range(2, MX):
-    if is_prime[i]:
-        primes.append(i)
-        for j in range(i * i, MX, i):
-            is_prime[j] = False
-
-
-# 直接判断是否是质数
-def is_prime(n: int) -> bool:
-    return all(n % i for i in range(2, isqrt(n) + 1))
-
-
-# 预处理每个数的所有因子，时间复杂度 O(MlogM)，M=1e5
-divisors = [[] for _ in range(MX)]
-for i in range(1, MX):  
-    for j in range(i, MX, i):
-        divisors[j].append(i)
-
-
-# 求一个数的所有质因数（没验证过）
-def prime_factors(n):
-    factors = []
-    i = 2
-
-    while i * i <= n:
-        if n % i:
-            i += 1
-        else:
-            n //= i
-            factors.append(i)
-    
-    if n > 1:
-        factors.append(n)
-    
-    return factors
-
-
 # X里个选2个有多少种组合（不考虑顺序），c(x, 2)
 def c2(x):
     return x * (x - 1) // 2
@@ -78,45 +32,9 @@ def comb(n: int, k: int) -> int: # n个里选k个
 # 5和左边3+4个点，两两之间符合要求。
 # 根据乘法原理，把4 * 3 + 5 * 7 加到答案中。
 
-
-# 模运算
-# a = k1*m + r1, b = k2*m + r2
-# (a + b) mod m = (r1 + r2) mod m = (a mod m + b mod m) mod m
-
-
 # 最小公倍数 lcm(Leatest Common Multiple)
 lcm = math.lcm(d1, d2)
 # 能被lcm的整除的，同时能被d1,d2整除
 
 # 组合数：返回不重复且无顺序地从 n 项中选择 k 项的方式总数
 math.comb(n, k)
-
-
-# https://leetcode.cn/problems/find-the-number-of-good-pairs-ii/description/
-# 求nums1[i] % (nums2[j] * k) == 0的个数
-class Solution:
-    def numberOfPairs(self, nums1: List[int], nums2: List[int], k: int) -> int:
-        cnt = Counter()
-        for x in nums1:
-            if x % k != 0:
-                continue
-            x //= k
-            for d in range(1, isqrt(x) + 1): # x的因子
-                if x % d != 0:
-                    continue
-                cnt[d] += 1
-                if d * d < x:
-                    cnt[x // d] += 1
-        return sum(cnt[y] for y in nums2)
-
-
-# https://leetcode.cn/problems/count-pairs-that-form-a-complete-day-ii/description/
-# 求 (nums[i] + nums[j]) % 24 = 0 的组合数
-class Solution:
-    def countCompleteDayPairs(self, hours: List[int]) -> int:
-        ans = 0
-        cnt = [0] * 24
-        for t in hours:
-            ans += cnt[(24 - t % 24) % 24]
-            cnt[t % 24] += 1
-        return ans
