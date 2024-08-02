@@ -4,7 +4,7 @@
 
 
 # https://leetcode.cn/problems/minimum-operations-to-make-all-array-elements-equal/description/
-# 难度：1903
+# rating: 1903
 # 2602. 使数组元素全部相等的最少操作次数
 # 利用前缀和，可以O(1)时间内求出子数组元素到其中位数的距离之和
 class Solution:
@@ -22,7 +22,7 @@ class Solution:
 
 
 # https://leetcode.cn/problems/minimum-moves-to-pick-k-ones/description/
-# 难度：2672
+# rating: 2672
 # 3086. 拾起 K 个 1 需要的最少行动次数
 class Solution:
     def minimumMoves(self, nums: List[int], k: int, maxChanges: int) -> int:

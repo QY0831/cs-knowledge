@@ -59,6 +59,26 @@ class Solution:
             ans += cnt[(24 - t % 24) % 24]
             cnt[t % 24] += 1
         return ans
+    
+    
+# https://leetcode.cn/problems/check-if-array-pairs-are-divisible-by-k/
+# 1497. 检查数组对是否可以被 k 整除
+# 把数组恰好分成 n / 2 对，以使每对数字的和都能够被 k 整除。
+class Solution:
+    def canArrange(self, arr: List[int], k: int) -> bool:
+        n = len(arr)
+        # (a + b) % k == 0
+        # (a % k + b % k) % k == 0
+        # (m1 + m2) % k == 0
+        cnt = Counter(x % k for x in arr)
+        for m, c in cnt.items():
+            if m == 0:
+                if c % 2 != 0:
+                    return False
+            else:
+                if cnt[k - m] != c:
+                    return False
+        return True
 
 
 # https://leetcode.cn/problems/find-the-count-of-numbers-which-are-not-special/description/

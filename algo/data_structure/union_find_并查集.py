@@ -52,7 +52,7 @@ class UnionFind:
 
 # https://leetcode.cn/problems/count-the-number-of-complete-components/description/
 # 2685. 统计完全连通分量的数量
-# 难度：1769
+# rating: 1769
 class Solution:
     def countCompleteComponents(self, n: int, edges: List[List[int]]) -> int:
         uf = UnionFind(n)
@@ -70,7 +70,7 @@ class Solution:
     
 # https://leetcode.cn/problems/find-latest-group-of-size-m/
 # 1562. 查找大小为 M 的最新分组
-# 难度: 1928
+# rating:: 1928
 # 利用并查集合并区间
 class Solution:
     def findLatestStep(self, arr: List[int], m: int) -> int:

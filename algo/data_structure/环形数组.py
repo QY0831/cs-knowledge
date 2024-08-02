@@ -1,6 +1,6 @@
 # https://leetcode.cn/problems/count-alternating-subarrays/
 # 3101. 交替子数组计数
-# 难度：1404
+# rating: 1404
 # 如果一个子数组中不存在两个相邻元素的值相同的情况，我们称这样的子数组为交替子数组 。
 class Solution:
     def countAlternatingSubarrays(self, nums: List[int]) -> int:
@@ -31,7 +31,7 @@ class Solution:
 
 # 2134. 最少交换次数来组合所有的 1 II
 # https://leetcode.cn/problems/minimum-swaps-to-group-all-1s-together-ii/description/
-# 难度：1748
+# rating: 1748
 # 将数组中的所有 1 聚集在一起需要的最少交换次数。
 # 算法：滑动窗口
 class Solution:

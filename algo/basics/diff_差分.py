@@ -49,7 +49,7 @@ class Solution:
 
 # https://leetcode.cn/problems/minimum-moves-to-make-array-complementary/description/
 # 1674. 使数组互补的最少操作次数
-# 难度：2333
+# rating: 2333
 class Solution:
     def minMoves(self, nums: List[int], limit: int) -> int:
         # res[x]: 和为x时，需要多少次操作

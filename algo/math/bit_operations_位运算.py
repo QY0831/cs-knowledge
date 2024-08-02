@@ -24,7 +24,7 @@ for mask in range(1, 1 << n):
     
 # https://leetcode.cn/problems/minimum-impossible-or/description/
 # 2568. 最小无法得到的或值
-# 难度：1754
+# rating: 1754
 class Solution:
     def minImpossibleOR(self, nums: List[int]) -> int:
         mask = 0
@@ -37,7 +37,7 @@ class Solution:
 
 # https://leetcode.cn/problems/design-bitset/description/
 # 2166. 设计位集
-# 难度：1751
+# rating: 1751
 # 解法：懒标记，除toString为O(n)外，其余操作均为O(1)
 class Bitset:
 
@@ -80,7 +80,7 @@ class Bitset:
     
 # 2401. 最长优雅子数组
 # https://leetcode.cn/problems/longest-nice-subarray/description/
-# 难度：1749
+# rating: 1749
 # 滑动窗口+位运算：求最长的子数组，满足子数组中任意两个数AND=0。
 class Solution:
     def longestNiceSubarray(self, nums: List[int]) -> int:

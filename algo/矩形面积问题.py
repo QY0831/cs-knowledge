@@ -91,7 +91,7 @@ class Solution:
 
 # https://leetcode.cn/problems/minimum-area-rectangle/description/
 # 939. 最小面积矩形
-# 难度：1752
+# rating: 1752
 # 给出点集，求最小面积矩形
 # 解法：按x轴排序，对于每个x，按y轴排序，遍历(y1, y2)，查看之前是否有相同的y，计算面积
 class Solution:

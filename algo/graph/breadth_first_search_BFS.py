@@ -29,7 +29,7 @@ def dfs(node: Optional[TreeNode], pa: Optional[TreeNode]) -> None:
 dfs(root, None)
 
 
-# 朴素广搜
+# 朴素BFS
 def search(start, target):
     q = deque([start])
     seen = {start}
@@ -43,7 +43,7 @@ def search(start, target):
                 seen.add(nxt_node)
     
 
-# 多源广搜
+# 多源BFS
 # https://leetcode.cn/problems/as-far-from-land-as-possible/
 class Solution:
     def maxDistance(self, grid: List[List[int]]) -> int:
@@ -71,6 +71,36 @@ class Solution:
             dis += 1
         return ans 
 
+
+# 多源BFS
+# https://leetcode.cn/problems/map-of-highest-peak/description/
+# 1765. 地图中的最高点
+class Solution:
+    def highestPeak(self, isWater: List[List[int]]) -> List[List[int]]:
+        m = len(isWater)
+        n = len(isWater[0])
+        ans = [[-1] * n for _ in range(m)]
+        q = deque([])
+        for i in range(m):
+            for j in range(n):
+                if isWater[i][j]:
+                    q.append((i, j))
+                    ans[i][j] = 0
+        h = 1
+        while q:
+            size = len(q)
+            for _ in range(size):
+                x, y = q.popleft()
+                for px, py in (1,0),(0,1),(-1,0),(0,-1):
+                    nx, ny = x + px, y + py
+                    if nx < 0 or nx >= m or ny < 0 or ny >= n:
+                        continue
+                    if ans[nx][ny] == -1:
+                        ans[nx][ny] = h
+                        q.append((nx, ny))
+            h += 1
+        return ans
+        
 
 # 拓扑排序
 # 建图 + 记录入度
