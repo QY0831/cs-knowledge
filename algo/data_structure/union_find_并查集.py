@@ -47,8 +47,61 @@ class UnionFind:
 
     def __len__(self) -> int:
         return self.part
-    
-    
+
+
+class UnionFindRange:
+    __slots__ = "part", "_n", "_parent", "_rank"
+
+    def __init__(self, n: int):
+        self.part = n
+        self._n = n
+        self._parent = list(range(n))
+        self._rank = [1] * n
+
+    def find(self, x: int) -> int:
+        while x != self._parent[x]:
+            self._parent[x] = self._parent[self._parent[x]]
+            x = self._parent[x]
+        return x
+
+    def union(
+        self, x: int, y: int, beforeMerge: Optional[Callable[[int, int], None]] = None
+    ) -> bool:
+        """union后, 大的编号所在的组的指向小的编号所在的组(向左合并)."""
+        if x < y:
+            x, y = y, x
+        rootX = self.find(x)
+        rootY = self.find(y)
+        if rootX == rootY:
+            return False
+        if beforeMerge is not None:
+            beforeMerge(rootY, rootX)
+        self._parent[rootX] = rootY
+        self._rank[rootY] += self._rank[rootX]
+        self.part -= 1
+        return True
+
+    def unionRange(
+        self, left: int, right: int, beforeMerge: Optional[Callable[[int, int], None]] = None
+    ) -> int:
+        """合并[left,right]区间, 返回合并次数."""
+        if left >= right:
+            return 0
+        leftRoot = self.find(left)
+        rightRoot = self.find(right)
+        unionCount = 0
+        while rightRoot != leftRoot:
+            unionCount += 1
+            self.union(rightRoot, rightRoot - 1, beforeMerge)
+            rightRoot = self.find(rightRoot - 1)
+        return unionCount
+
+    def isConnected(self, x: int, y: int) -> bool:
+        return self.find(x) == self.find(y)
+
+    def getSize(self, x: int) -> int:
+        return self._rank[self.find(x)]
+
 
 # https://leetcode.cn/problems/count-the-number-of-complete-components/description/
 # 2685. 统计完全连通分量的数量
@@ -70,7 +123,7 @@ class Solution:
     
 # https://leetcode.cn/problems/find-latest-group-of-size-m/
 # 1562. 查找大小为 M 的最新分组
-# rating:: 1928
+# rating: 1928
 # 利用并查集合并区间
 class Solution:
     def findLatestStep(self, arr: List[int], m: int) -> int:
@@ -122,3 +175,79 @@ class Solution:
             if uf.is_connected(n, n + 1):
                 return False
         return True
+
+
+# https://leetcode.cn/problems/shortest-distance-after-road-addition-queries-ii/description/
+# 3244. 新增道路查询后的最短距离 II
+# 区间并查集
+# 类似：https://leetcode.cn/problems/amount-of-new-area-painted-each-day/description/
+class UnionFind:
+    def __init__(self, n):
+        self.n = n
+        self.parent = list(range(n))
+        self.part = n # 连通分量
+
+    def find(self, a):
+        if self.parent[a] != a:
+            self.parent[a] = self.find(self.parent[a])
+        return self.parent[a]
+
+    def merge(self, a, b):
+        pa, pb = self.find(a), self.find(b)
+        if pa == pb: 
+            return False
+        self.parent[pa] = pb
+        self.part -= 1
+        return True
+    
+class Solution:
+    def shortestDistanceAfterQueries(self, n: int, queries: List[List[int]]) -> List[int]:
+        # 01->0
+        # 12->1
+        # ..
+        # n-1,n -> n - 1
+        uf = UnionFind(n - 1)
+        ans = []
+        for a, b in queries:
+            l = uf.find(a)
+            r = uf.find(b - 1)
+            while l != r:
+                uf.merge(r, r - 1) # 向左合并
+                r = uf.find(r - 1)
+            ans.append(uf.part)
+        return ans
+
+
+# https://leetcode.cn/problems/last-day-where-you-can-still-cross/description/
+# 1970. 你能穿过矩阵的最后一天
+# 倒序并查集
+# rating: 2123
+class Solution:
+    def latestDayToCross(self, row: int, col: int, cells: List[List[int]]) -> int:
+        n = row * col
+        uf = UnionFind(n + 2) # n: top n+1: bot
+
+        def get_idx(i, j):
+            return i * col + j
+
+        s = set() 
+        for i in range(len(cells) - 1, -1, -1):
+            x, y = cells[i]
+            x -= 1
+            y -= 1
+            k = get_idx(x, y)
+
+            for dx, dy in (0, 1), (0, -1), (1, 0), (-1, 0):
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < row and 0 <= ny < col and (nx, ny) in s:
+                    uf.merge(k, get_idx(nx, ny))
+            
+            if x + 1 == row:
+                uf.merge(k, n + 1)
+            if x == 0:
+                uf.merge(k, n)
+
+            s.add((x, y))
+
+            if uf.is_connected(n, n + 1):
+                return i

@@ -70,3 +70,49 @@ class Solution:
 
       reroot(0, -1, cnt0)
       return ans
+  
+  
+# https://leetcode.cn/problems/time-taken-to-mark-all-nodes/description/
+# 3241. 标记所有节点需要的时间
+# 需要记录最大、次大深度，以及最大深度方向
+class Solution:
+    def timeTaken(self, edges: List[List[int]]) -> List[int]:
+        n = len(edges) + 1
+        g = [[] for _ in range(n)]
+        for a, b in edges:
+            g[a].append(b)
+            g[b].append(a)
+        
+        nodes = [None] * n # 保存（最大深度，次大深度，最大深度方向)
+
+        def dfs(x, fa): # 从x出发的最大深度（考虑边权）
+            max_d = max_d2 = my = 0
+            for y in g[x]:
+                if y != fa:
+                    depth = dfs(y, x) + 2 - y % 2
+                    if depth > max_d:
+                        max_d, max_d2 = depth, max_d
+                        my = y
+                    elif depth > max_d2:
+                        max_d2 = depth
+            nodes[x] = (max_d, max_d2, my)
+            return max_d
+
+        dfs(0, -1)
+
+        ans = [0] * n
+
+        def reroot(x, fa, from_up): # from_up，从fa走得到的路径
+            max_d, max_d2, my = nodes[x]
+            ans[x] = max(from_up, max_d) # 当前节点的最大深度，或从父节点向上的最大深度
+            w = 2 - x % 2 # y -> x的边权
+            for y in g[x]:
+                if y != fa:
+                    # 1.from_up可能为x节点的from_up + w
+                    # 2.如果y在x出发的最大深度的路径上，则from_up可能是max_d2 + w, 否则max_d + w
+                    # 两者取max
+                    reroot(y, x, w + max(from_up, max_d2 if y == my else max_d))
+
+        reroot(0, -1, 0)
+        return ans
+                
