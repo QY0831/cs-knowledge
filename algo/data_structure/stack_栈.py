@@ -102,6 +102,7 @@ class Solution:
 # https://leetcode.cn/problems/maximum-subarray-min-product/description/
 # 1856. 子数组最小乘积的最大值
 # rating: 2051
+# 目的：求以nums[i]为最小值的子数组的最大乘积 -> 求该子数组左侧、右侧边界 -> 单调递增栈
 class Solution:
     def maxSumMinProduct(self, nums: List[int]) -> int:
         n = len(nums)
