@@ -64,7 +64,7 @@ class StockSpanner:
 
 # https://leetcode.cn/problems/largest-rectangle-in-histogram/
 # 最大矩形面积
-# 单调栈：找左侧、右侧的更小元素的位置
+# 单调栈：找左侧、右侧的更小元素的位置(可跳过中间的更大元素)
 class Solution:
     def largestRectangleArea(self, heights: List[int]) -> int:
         # 每个高度h，找到左、右侧最近的高度小于h的柱子
@@ -97,3 +97,37 @@ class Solution:
             s = (suf[n - 1 - i] - pre[i] - 1) * heights[i]
             ans = max(s, ans)
         return ans
+
+
+# https://leetcode.cn/problems/maximum-subarray-min-product/description/
+# 1856. 子数组最小乘积的最大值
+# rating: 2051
+class Solution:
+    def maxSumMinProduct(self, nums: List[int]) -> int:
+        n = len(nums)
+        stk = [] # 单调递增求下一个更小元素
+        left = [-1] * n
+        for i in range(n - 1, -1, -1):
+            x = nums[i]
+            while stk and x < nums[stk[-1]]:
+                left[stk.pop()] = i
+            stk.append(i)
+
+        stk = []
+        right = [n] * n
+        for i in range(n):
+            x = nums[i]
+            while stk and x < nums[stk[-1]]:
+                right[stk.pop()] = i
+            stk.append(i)
+
+        pre = list(accumulate(nums, initial=0)) 
+        # sum[i, j] = pre[j+1] - pre[i]
+        # sum(i, j) = pre[j] - pre[i+1]
+
+        ans = 0
+        for i in range(n):
+            l, r = left[i], right[i]
+            # 求sum (left ... right)
+            ans = max(ans, (pre[r] - pre[l+1]) * nums[i])
+        return ans % 1_000_000_007

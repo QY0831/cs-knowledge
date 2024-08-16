@@ -1,5 +1,5 @@
+"""并查集维护无向图每个连通块的边数和顶点数"""
 class UnionFind:
-    """并查集维护无向图每个连通块的边数和顶点数"""
     def __init__(self, n, size=None):
         self.n = n
         self.parent = list(range(n))
@@ -251,3 +251,28 @@ class Solution:
 
             if uf.is_connected(n, n + 1):
                 return i
+
+
+# https://leetcode.cn/problems/greatest-common-divisor-traversal/description/
+# 2709. 最大公约数遍历
+# GCD并查集：每个数与自己的质因数相连
+MX = 10 ** 5 + 1
+divisors = [[] for _ in range(MX)]
+for i in range(2, MX):  
+    for j in range(i, MX, i):
+        divisors[j].append(i)
+
+class Solution:
+    def canTraverseAllPairs(self, nums: List[int]) -> bool:
+        n = len(nums)
+        uf = UnionFind(n + MX)
+        for i in range(n):
+            for p in divisors[nums[i]]:
+                uf.merge(i, n + p)
+                
+        res = set()
+        for i in range(n):
+            res.add(uf.find(i))
+        
+        return len(res) == 1
+
