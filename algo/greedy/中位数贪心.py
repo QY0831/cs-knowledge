@@ -1,6 +1,8 @@
 # pos = [0,1,5]
 # 在坐标轴上的 0,1,5 位置上有 3 个生产商品的工厂，我们要建造一个货仓存放商品，把货仓建在哪里，可以使所有工厂到货仓的距离之和最小？
 # 这个问题叫做「货仓选址」。根据 中位数贪心及其证明，最优解是把货仓建在工厂位置的中位数上。
+# 设cost[i][j]表示在工厂i和工厂j之间建一个货仓的最小距离和，
+# 那么cost[i][j] = cost[i+1][j-1] + pos[j] - pos[i]， 可以预处理出cost数组（例题：1478. 安排邮筒）
 
 
 # https://leetcode.cn/problems/minimum-operations-to-make-all-array-elements-equal/description/
@@ -75,3 +77,37 @@ class Solution:
             s2 = pre[right] - pre[i] - pos[i] * (right - i)
             ans = min(ans, s1 + s2)
         return ans + maxChanges * 2
+
+
+# https://leetcode.cn/problems/allocate-mailboxes/
+# 1478. 安排邮筒
+# rating: 2190
+class Solution:
+    def minDistance(self, houses: List[int], k: int) -> int:
+        # cost[i][j]: 在house[i],house[j]间放一个邮筒的最小总花费，放在中位数处总和最小
+        # 1 4 8 9 20
+        # med = 8
+        # 4 8 9
+        # med = 8
+        # cost[i][j] = cost[i+1][j-1] + house[j] - house[i]
+        n = len(houses)
+        houses.sort()
+        cost = [[0] * n for _ in range(n)]
+        for i in range(n - 1, -1, -1):
+            for j in range(i + 1, n): # j > i
+                if i == j:
+                    cost[i][j] = 0
+                else:
+                    cost[i][j] = cost[i+1][j-1] + houses[j] - houses[i]
+        
+        # f[i][j]: 前i个房子，放j个邮筒的最小距离和
+        # f[i][j] = min(f[L][j-1] + cost[L][i], L:[0,i-1], j:[2, min(i+1, k)])
+        f = [[inf] * (k + 1) for _ in range(n + 1)]
+        f[0][0] = 0
+        for i in range(1, n + 1):
+            f[i][1] = cost[0][i - 1]
+            for j in range(2, min(i+1, k) + 1):
+                for L in range(i):
+                    if f[L][j-1] != inf:
+                        f[i][j] = min(f[i][j], f[L][j-1] + cost[L][i-1])
+        return f[-1][-1]

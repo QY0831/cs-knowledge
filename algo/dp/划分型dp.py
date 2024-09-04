@@ -53,34 +53,13 @@ class Solution:
 
 
 
-# 计算可划分的组数
-# https://leetcode.cn/problems/minimum-substring-partition-of-equal-character-frequency/description/
-class Solution:
-    def minimumSubstringsInPartition(self, s: str) -> int:
-        # f[i]: 前i个字符最少划分
-        # f[i] = min(f[j] + 1 if s[j+1:i] is valid)
-        n = len(s)
-        f = [inf] * (n + 1)
-        f[0] = 0
-        for i in range(1, n + 1): # f[i]
-            cnt = Counter()
-            mx = c_cnt = 0  
-            # 在s[j:i]
-            # mx: 同一种字母最多出现几次； 
-            # c_cnt：出现几种字母
-            for j in range(i - 1, -1, -1): # f[j]
-                cnt[s[j]] += 1
-                if cnt[s[j]] == 1:
-                    c_cnt += 1
-                if cnt[s[j]] > mx:
-                    mx = cnt[s[j]]
-
-                if mx * c_cnt == i - j and f[j] + 1 < f[i]:
-                    f[i] = f[j] + 1
-        return f[-1]
-
+# 约束划分个数
+# 将数组分成（恰好/至多）k 个连续子数组，计算与这些子数组有关的最优值。
+# 一般定义 f[i][j] 表示将长为 j 的前缀 a[:j] 分成 i 个连续子数组所得到的最优解。
 
 # https://leetcode.cn/problems/maximum-strength-of-k-disjoint-subarrays/description/
+# 3077. K 个不相交子数组的最大能量值
+# rating: 2556
 # 计算划分的k个不相交子数组的最大能量和
 # 能量和：x 个子数组的能量值： sum[1] * x - sum[2] * (x - 1) + sum[3] * (x - 2) - sum[4] * (x - 3) + ... + sum[x] * 1
 # 其中 sum[i] 是第 i 个子数组的和
@@ -100,6 +79,8 @@ class Solution:
 
 
 # https://leetcode.cn/problems/largest-sum-of-averages/description/
+# 813. 最大平均值和的分组
+# rating: 1936
 # 最多分成k个子数组，计算最大平均值和
 class Solution:
     def largestSumOfAverages(self, nums: List[int], k: int) -> float:
@@ -120,6 +101,8 @@ class Solution:
 
 
 # https://leetcode.cn/problems/palindrome-partitioning-iii/
+# 1278. 分割回文串 III
+# rating: 1979
 # 返回以将s分割成k个回文字符串所需修改的最少字符数
 class Solution:
     def palindromePartition(self, s: str, k: int) -> int:
@@ -142,3 +125,38 @@ class Solution:
             return res
         
         return f(len(s), k)
+
+
+# https://leetcode.cn/problems/allocate-mailboxes/
+# 1478. 安排邮筒
+# rating: 2190
+class Solution:
+    def minDistance(self, houses: List[int], k: int) -> int:
+        # cost[i][j]: 在house[i],house[j]间放一个邮筒的最小总花费，放在中位数处总和最小
+        # 1 4 8 9 20
+        # med = 8
+        # 4 8 9
+        # med = 8
+        # cost[i][j] = cost[i+1][j-1] + house[j] - house[i]
+        n = len(houses)
+        houses.sort()
+        cost = [[0] * n for _ in range(n)]
+        for i in range(n - 1, -1, -1):
+            for j in range(i + 1, n): # j > i
+                if i == j:
+                    cost[i][j] = 0
+                else:
+                    cost[i][j] = cost[i+1][j-1] + houses[j] - houses[i]
+        
+        # f[i][j]: 前i个房子，放j个邮筒的最小距离和
+        # f[i][j] = min(f[L][j-1] + cost[L][i], L:[0,i-1], j:[2, min(i+1, k)])
+        f = [[inf] * (k + 1) for _ in range(n + 1)]
+        f[0][0] = 0
+        for i in range(1, n + 1):
+            f[i][1] = cost[0][i - 1]
+            for j in range(2, min(i+1, k) + 1):
+                for L in range(i):
+                    if f[L][j-1] != inf:
+                        f[i][j] = min(f[i][j], f[L][j-1] + cost[L][i-1])
+        return f[-1][-1]
+    
