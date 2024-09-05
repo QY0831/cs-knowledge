@@ -159,4 +159,57 @@ class Solution:
                     if f[L][j-1] != inf:
                         f[i][j] = min(f[i][j], f[L][j-1] + cost[L][i-1])
         return f[-1][-1]
-    
+
+
+# 不相交区间
+# 给定 n 个闭区间 [left_i,right_i,score_i].
+# 请你在数轴上选择若干区间,使得选中的区间之间互不相交.
+# 返回可选取区间的最大权值和.
+
+# https://leetcode.cn/problems/maximize-the-profit-as-the-salesman/
+# 2830. 销售利润最大化
+# rating: 1851
+class Solution:
+    def maximizeTheProfit(self, n: int, offers: List[List[int]]) -> int:
+        # f[i]: 前i个房屋能赚取的最大金币
+        # 不买第i个：f[i] = f[i-1] 
+        # 买第i个：f[i] = f[i0] + g0 if j0 == i - 1，遍历所有end == i - 1的offer来更新f[i]
+        mp = defaultdict(list)
+        for s, e, g in offers:
+            mp[e].append((s, g))
+        f = [0] * (n + 1)
+        for end in range(1, n + 1):
+            f[end] = f[end - 1]
+            for s, g in mp[end - 1]:
+                f[end] = max(f[end], f[s] + g)
+        return f[-1]
+
+
+# https://leetcode-cn.com/problems/maximum-profit-in-job-scheduling/
+# 1235. 规划兼职工作
+# rating: 2022
+class Solution:
+    def jobScheduling(self, startTime: List[int], endTime: List[int], profit: List[int]) -> int:
+        jobs = sorted(zip(endTime, startTime, profit))  # 按照结束时间排序
+        f = [0] * (len(jobs) + 1)
+        for i, (_, st, p) in enumerate(jobs):
+            j = bisect_left(jobs, (st + 1,), hi=i) 
+            # 比当前job结束时间早的end最大的job -> 找 end[j] >= st + 1 则 end[j-1] < st + 1 -> end[j-1] <= st, 对应f[j]
+            f[i + 1] = max(f[i], f[j] + p)
+        return f[-1]
+
+
+# https://leetcode.cn/problems/maximum-number-of-events-that-can-be-attended-ii/description/
+# 1751. 最多可以参加的会议数目 II
+# rating: 2040
+# 比1235多一个维度，且start, end不能重合
+class Solution:
+    def maxValue(self, events: List[List[int]], k: int) -> int:
+        events = sorted((e, s, v) for s, e, v in events)  # 按照结束时间排序
+        n = len(events)
+        f = [[0] * (k+1) for _ in range(n + 1)]
+        for i, (_, s, v) in enumerate(events):
+            j = bisect_left(events, (s, ), hi=i) # end[j] >= s  -> end[j-1] < s 
+            for kk in range(1, k + 1):
+                f[i + 1][kk] = max(f[i][kk], f[j][kk - 1] + v)
+        return f[-1][-1]
