@@ -144,3 +144,36 @@ def minLen(nums: List[int]) -> int:
             S.popleft()
     return res
 
+
+
+# 两次滑动窗口求恰好包含k个辅音的子字符串数
+# https://leetcode.cn/problems/count-of-substrings-containing-every-vowel-and-k-consonants-ii/
+class Solution:
+
+    def f(self, word, k): # 每个元音字母至少出现一次，并且至少包含 k 个辅音字母的子字符串的总数
+        vowels = 'aeiou'
+        cnt1 = defaultdict(int)
+        cnt2 = 0
+        ans = 0
+        left = 0
+        ans = 0
+        for c in word:
+            if c in vowels:
+                cnt1[c] += 1
+            else:
+                cnt2 += 1
+            while len(cnt1) == 5 and cnt2 >= k: # 压缩左边界直到不符合
+                x = word[left]
+                if x in vowels:
+                    cnt1[x] -= 1
+                    if cnt1[x] == 0:
+                        del cnt1[x]
+                else:
+                    cnt2 -= 1
+                left += 1
+            ans += left # 此时右边界right,左边界<left的子串，都符合条件
+        return ans
+
+    def countOfSubstrings(self, word: str, k: int) -> int:
+        # 恰好k个=至少包含k个辅音字符-至少包含k+1个辅音字符
+        return self.f(word, k) - self.f(word, k+1)
