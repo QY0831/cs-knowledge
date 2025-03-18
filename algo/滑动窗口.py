@@ -1,4 +1,52 @@
-# LEETCODE https://leetcode.cn/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/description/
+# 定长滑动窗口
+# https://leetcode.cn/problems/number-of-unique-flavors-after-sharing-k-candies/description/
+# 2107. 分享 K 个糖果后独特口味的数量
+class Solution:
+    def shareCandies(self, candies: List[int], k: int) -> int:
+        if k == 0:
+            return len(set(candies))
+        ans = 0
+        tot = Counter(candies)
+        for i, x in enumerate(candies):
+            tot[x] -= 1  # 入窗
+            if tot[x] == 0:
+                del tot[x]
+                
+            if i < k - 1:
+                continue
+            
+            if len(tot) > ans: # 更新答案
+                ans = len(tot)
+
+            pre = candies[i - k + 1] # 出窗
+            tot[pre] += 1
+        return ans
+
+
+# 不定长滑动窗口
+# 主要分为三类：求最长子数组，求最短子数组，以及求子数组个数。
+# https://leetcode.cn/problems/minimum-operations-to-reduce-x-to-zero/
+class Solution:
+    def minOperations(self, nums: List[int], x: int) -> int:
+        left = cur = 0
+        ans = -1
+        s = sum(nums)
+        t = s - x
+        if t < 0:
+            return -1
+        for i, d in enumerate(nums): # 求和为t的最长子数组
+            cur += d
+            while cur > t:
+                cur -= nums[left]
+                left += 1
+            if cur == t:
+                ans = max(ans, i - left + 1)
+        if ans == -1:
+            return -1
+        return len(nums) - ans 
+
+
+# https://leetcode.cn/problems/longest-continuous-subarray-with-absolute-diff-less-than-or-equal-to-limit/description/
 # 滑动窗口最大最小值
 class Solution:
     def longestSubarray(self, nums: List[int], limit: int) -> int:
@@ -23,24 +71,6 @@ class Solution:
                     d1.popleft()
             ans = max(ans, right - left + 1)
         return ans
-
-
-# 固定长度的滑动窗口
-# https://leetcode.cn/problems/maximum-points-you-can-obtain-from-cards/description/
-class Solution:
-    def maxScore(self, cardPoints: List[int], k: int) -> int:
-        if k <= 0 or k > len(cardPoints):
-            return
-        left = 0
-        window_size = len(cardPoints) - k
-        min_sum = sum(cardPoints[:window_size])
-        cur_sum = sum(cardPoints[:window_size])
-        for right in range(window_size,len(cardPoints)):
-            cur_sum += cardPoints[right]
-            cur_sum -= cardPoints[left]
-            left += 1
-            min_sum = min(min_sum, cur_sum)
-        return sum(cardPoints) - min_sum
 
 
 # SlidingWindowAggregation 是一个维护幺半群的滑动窗口的数据结构
