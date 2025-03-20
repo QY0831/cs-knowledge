@@ -8,3 +8,4 @@ References:
  - [python-patterns](https://github.com/faif/python-patterns)
  - [fastapi](https://fastapi.tiangolo.com/zh/learn/)
  - [coursera deep-learning](https://www.coursera.org/specializations/deep-learning)
+ - [现代 JavaScript 教程](https://zh.javascript.info/)
