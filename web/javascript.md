@@ -529,3 +529,396 @@ let sum = (a, b) => {  // 花括号表示开始一个多行函数
 
 alert( sum(1, 2) ); // 3
 ```
+
+# 对象
+我们可以在创建对象的时候，立即将一些属性以键值对的形式放到 {...} 中。
+```
+let user = {     // 一个对象
+  name: "John",  // 键 "name"，值 "John"
+  age: 30,        // 键 "age"，值 30
+  "likes birds": true,  // 多词属性名必须加引号
+};
+
+// 读取文件的属性：
+alert( user.name ); // John
+alert( user.age ); // 30
+
+
+// 我们可以随时添加、删除和读取文件。
+user.isAdmin = true;
+delete user.age;
+
+```
+
+## 方括号
+```
+let user = {};
+
+// 设置
+user["likes birds"] = true;
+
+// 读取
+alert(user["likes birds"]); // true
+
+// 删除
+delete user["likes birds"];
+```
+
+## 计算属性
+属性名从变量中提取
+```
+let fruit = prompt("Which fruit to buy?", "apple");
+
+let bag = {
+  [fruit]: 5, // 属性名是从 fruit 变量中得到的
+};
+
+alert( bag.apple ); // 5 如果 fruit="apple"
+
+
+let fruit = 'apple';
+let bag = {
+  [fruit + 'Computers']: 5 // bag.appleComputers = 5
+};
+```
+## 属性值简写
+```
+function makeUser(name, age) {
+  return {
+    name: name,
+    age: age,
+    // ……其他的属性
+  };
+}
+
+let user = makeUser("John", 30);
+alert(user.name); // John
+```
+在上面的例子中属性名跟变量名一样。这种通过变量生成属性的应用场景很常见，在这有一种特殊的 属性值缩写 方法，使属性名变得更短。
+
+```
+function makeUser(name, age) {
+  return {
+    name, // 与 name: name 相同
+    age,  // 与 age: age 相同
+    // ...
+  };
+}
+```
+
+## “in” 操作符
+读取不存在的属性只会得到 undefined
+```
+let user = {};
+
+alert( user.noSuchProperty === undefined ); // true 意思是没有这个属性
+```
+检查属性是否存在的操作符 "in"
+```
+let user = { name: "John", age: 30 };
+
+alert( "age" in user ); // true，user.age 存在
+alert( "blabla" in user ); // false，user.blabla 不存在。
+```
+
+## "for..in" 循环
+
+```
+for (key in object) {
+  // 对此对象属性中的每个键执行的代码
+}
+
+
+let user = {
+  name: "John",
+  age: 30,
+  isAdmin: true
+};
+
+for (let key in user) {
+  // keys
+  alert( key );  // name, age, isAdmin
+  // 属性键的值
+  alert( user[key] ); // John, 30, true
+}
+```
+
+## 对象引用和复制
+```
+let user = { name: "John" };
+
+let admin = user; // 复制引用
+
+admin.name = 'Pete'; // 通过 "admin" 引用来修改
+
+alert(user.name); // 'Pete'，修改能通过 "user" 引用看到
+```
+### 通过引用来比较
+仅当两个对象为同一对象时，两者才相等。
+```
+let a = {};
+let b = a; // 复制引用
+
+alert( a == b ); // true，都引用同一对象
+alert( a === b ); // true
+```
+### 克隆与合并，Object.assign
+Object.assign可以克隆、合并对象
+```
+Object.assign(dest, [src1, src2, src3...])
+```
+ - 第一个参数 dest 是指目标对象。
+ - 更后面的参数 src1, ..., srcN（可按需传递多个参数）是源对象。
+ - 该方法将所有源对象的属性拷贝到目标对象 dest 中。换句话说，从第二个开始的所有参数的属性都被拷贝到第一个参数的对象中。
+ - 调用结果返回 dest。
+
+```
+let user = { name: "John" };
+
+let permissions1 = { canView: true };
+let permissions2 = { canEdit: true };
+
+// 将 permissions1 和 permissions2 中的所有属性都拷贝到 user 中
+Object.assign(user, permissions1, permissions2);
+
+// 现在 user = { name: "John", canView: true, canEdit: true }
+```
+
+简单克隆
+```
+let user = {
+  name: "John",
+  age: 30
+};
+
+let clone = Object.assign({}, user);
+```
+
+### 深层克隆
+当属性是对其他对象的引用时，会以引用形式被拷贝，我们应该使用一个拷贝循环来检查 user[key] 的每个值，如果它是一个对象，那么也复制它的结构。这就是所谓的“深拷贝”。
+```
+let user = {
+  name: "John",
+  sizes: {
+    height: 182,
+    width: 50
+  }
+};
+
+let clone = Object.assign({}, user);
+
+alert( user.sizes === clone.sizes ); // true，同一个对象
+
+// user 和 clone 分享同一个 sizes
+user.sizes.width++;       // 通过其中一个改变属性值
+alert(clone.sizes.width); // 51，能从另外一个获取到变更后的结果
+```
+
+## 垃圾回收
+
+对于开发者来说，JavaScript 的内存管理是自动的、无形的。我们创建的原始值、对象、函数……这一切都会占用内存。
+
+### 可达性（Reachability）
+ - 当对象是可达状态时，它一定是存在于内存中的。
+ - JavaScript 引擎监控着所有对象的状态，并删除掉那些已经不可达的。
+
+## 对象方法，"this"
+声明对象，并添加方法
+```
+let user = {
+  name: "John",
+  age: 30
+};
+
+user.sayHi = function() {
+  alert("Hello!");
+};
+
+user.sayHi(); // Hello!
+```
+
+### 方法简写
+```
+user = {
+  sayHi: function() {
+    alert("Hello");
+  }
+};
+
+// 方法简写看起来更好，对吧？
+let user = {
+  sayHi() { // 与 "sayHi: function(){...}" 一样
+    alert("Hello");
+  }
+};
+```
+
+### 方法中的 “this”
+```
+let user = {
+  name: "John",
+  age: 30,
+
+  sayHi() {
+    // "this" 指的是“当前的对象”
+    alert(this.name);
+  }
+
+};
+
+user.sayHi(); // John
+```
+
+### “this” 不受限制
+
+JavaScript 中的 this 可以用于任何函数，即使它不是对象的方法。
+
+```
+let user = { name: "John" };
+let admin = { name: "Admin" };
+
+function sayHi() {
+  alert( this.name );
+}
+
+// 在两个对象中使用相同的函数
+user.f = sayHi;
+admin.f = sayHi;
+
+// 这两个调用有不同的 this 值
+// 函数内部的 "this" 是“点符号前面”的那个对象
+user.f(); // John（this == user）
+admin.f(); // Admin（this == admin）
+
+admin['f'](); // Admin（使用点符号或方括号语法来访问这个方法，都没有关系。）
+```
+
+## 构造器和操作符 "new"
+
+### 构造函数
+ - 它们的命名以大写字母开头。
+ - 它们只能由 "new" 操作符来执行
+```
+function User(name) {
+  this.name = name;
+  this.isAdmin = false;
+}
+
+let user = new User("Jack");
+
+alert(user.name); // Jack
+alert(user.isAdmin); // false
+```
+```
+  function Calculator(){
+    this.read = function(){
+      this.a = +prompt('number A', 0);
+      this.b = +prompt('number B', 0);
+    }
+
+    this.sum = function(){
+      return this.a + this.b;
+    }
+
+    this.mul = function(){
+      return this.a * this.b;
+    }
+
+  }
+```
+
+
+## 可选链 "?."
+```
+let user = {}; // user 没有 address 属性
+
+alert(user.address ? user.address.street ? user.address.street.name : null : null);
+```
+使用可选链优雅地检查嵌套属性
+```
+let user = {}; // user 没有 address 属性
+
+alert( user?.address?.street ); // undefined（不报错）
+```
+
+### 其它变体：?.()，?.[]
+?.() 用于调用一个可能不存在的函数。
+```
+let userAdmin = {
+  admin() {
+    alert("I am admin");
+  }
+};
+
+let userGuest = {};
+
+userAdmin.admin?.(); // I am admin
+
+userGuest.admin?.(); // 啥都没发生（没有这样的方法）
+```
+
+?.[] 从一个可能不存在的对象上安全地读取属性。
+
+```
+let key = "firstName";
+
+let user1 = {
+  firstName: "John"
+};
+
+let user2 = null;
+
+alert( user1?.[key] ); // John
+alert( user2?.[key] ); // undefined
+```
+
+## symbol 类型
+“symbol” 值表示唯一的标识符。
+```
+let id1 = Symbol("id");
+let id2 = Symbol("id");
+
+alert(id1 == id2); // false
+```
+### “隐藏”属性
+symbol 允许我们创建对象的“隐藏”属性，代码的任何其他部分都不能意外访问或重写这些属性。
+
+```
+let user = { // 属于另一个代码
+  name: "John"
+};
+
+let id = Symbol("id");
+
+user[id] = 1;
+
+alert( user[id] ); // 我们可以使用 symbol 作为键来访问数据
+```
+### 全局 symbol
+Symbol.for(key)会检查全局注册表，如果有一个描述为 key 的 symbol，则返回该 symbol，否则将创建一个新 symbol（Symbol(key)），并通过给定的 key 将其存储在注册表中。
+
+```
+// 从全局注册表中读取
+let id = Symbol.for("id"); // 如果该 symbol 不存在，则创建它
+
+// 再次读取（可能是在代码中的另一个位置）
+let idAgain = Symbol.for("id");
+
+// 相同的 symbol
+alert( id === idAgain ); // true
+```
+
+### Symbol.keyFor
+```
+// 通过 name 获取 symbol
+let sym = Symbol.for("name");
+let sym2 = Symbol.for("id");
+
+// 通过 symbol 获取 name
+alert( Symbol.keyFor(sym) ); // name
+alert( Symbol.keyFor(sym2) ); // id
+```
+
+### 系统 symbol
+JavaScript 内部有很多“系统” symbol，我们可以使用它们来微调对象的各个方面。
+https://tc39.github.io/ecma262/#sec-well-known-symbols
