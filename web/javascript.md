@@ -922,3 +922,190 @@ alert( Symbol.keyFor(sym2) ); // id
 ### 系统 symbol
 JavaScript 内部有很多“系统” symbol，我们可以使用它们来微调对象的各个方面。
 https://tc39.github.io/ecma262/#sec-well-known-symbols
+
+
+# 数据类型
+ - 原始值：7种原始类型：string，number，bigint，boolean，symbol，null 和 undefined
+ - 对象： 使用大括号 {} 创建对象，例如：{name: "John", age: 30}；函数也是对象
+
+## 当作对象的原始类型
+为了能像对象一样对原始类型调用方法，JavaScript创建了提供额外功能的特殊“对象包装器”，使用后即被销毁。
+```
+let str = "Hello";
+
+alert( str.toUpperCase() ); // HELLO
+```
+1. 字符串 str 是一个原始值。因此，在访问其属性时，会创建一个包含字符串字面值的特殊对象，并且具有可用的方法，例如 toUpperCase()。
+2. 该方法运行并返回一个新的字符串（由 alert 显示）。
+3. 特殊对象被销毁，只留下原始值 str。
+
+# 数字类型
+## 编写数字的更多方法
+```
+let billion = 1000000000;
+
+let billion = 1_000_000_000;
+
+let billion = 1e9; 
+
+let mcs = 0.000001;
+
+let mcs = 1e-6;
+```
+
+## 十六进制，二进制和八进制数字
+```
+alert( 0xff ); // 255
+alert( 0xFF ); // 255（一样，大小写没影响）
+
+let a = 0b11111111; // 二进制形式的 255
+let b = 0o377; // 八进制形式的 255
+
+alert( a == b ); // true，两边是相同的数字，都是 255
+```
+
+## toString(base)
+方法 num.toString(base) 返回在给定 base 进制数字系统中 num 的字符串表示形式。
+```
+let num = 255;
+
+alert( num.toString(16) );  // ff
+alert( num.toString(2) );   // 11111111
+```
+
+## 舍入
+ - Math.floor: 向下取整
+ - Math.ceil: 向上取整
+ - Math.round: 向最近整数取整
+ - Math.trunc: 移除小数
+
+## 不精确的计算
+如果一个数字真的很大，则可能会溢出 64 位存储，变成一个特殊的数值 Infinity：
+```
+alert( 1e500 ); // Infinity
+```
+精度损失
+```
+alert( 0.1 + 0.2 == 0.3 ); // false
+
+alert( 0.1 + 0.2 ); // 0.30000000000000004
+```
+一个数字以其二进制的形式存储在内存中，一个 1 和 0 的序列。但是在十进制数字系统中看起来很简单的 0.1，0.2 这样的小数，实际上在二进制形式中是无限循环小数。  
+
+借助方法 toFixed(n) 对结果进行舍入：
+
+```
+let sum = 0.1 + 0.2;
+alert( sum.toFixed(2) ); // "0.30"
+```
+toFixed 总是返回一个字符串。它确保小数点后有 2 位数字。我们可以使用一元加号将其强制转换为一个数字：
+
+```
+alert( +sum.toFixed(2) ); // 0.3
+```
+
+## isFinite 和 isNaN
+ - Infinity（和 -Infinity）是一个特殊的数值，比任何数值都大（小）。
+ - NaN 代表一个 error。
+
+isNaN(value) 将其参数转换为数字，然后测试它是否为 NaN：
+```
+alert( isNaN(NaN) ); // true
+alert( isNaN("str") ); // true
+```
+isFinite(value) 将其参数转换为数字，如果是常规数字而不是 NaN/Infinity/-Infinity，则返回 true：
+```
+alert( isFinite("15") ); // true
+alert( isFinite("str") ); // false，因为是一个特殊的值：NaN
+alert( isFinite(Infinity) ); // false，因为是一个特殊的值：Infinity
+```
+
+## parseInt 和 parseFloat
+它们可以从字符串中“读取”数字，直到无法读取为止。如果发生 error，则返回收集到的数字。函数 parseInt 返回一个整数，而 parseFloat 返回一个浮点数：
+```
+alert( parseInt('100px') ); // 100
+alert( parseFloat('12.5em') ); // 12.5
+
+alert( parseInt('12.3') ); // 12，只有整数部分被返回了
+alert( parseFloat('12.3.4') ); // 12.3，在第二个点出停止了读取
+
+alert( parseInt('a123') ); // NaN，第一个符号停止了读取
+```
+
+## 字符串
+### 引号（Quotes）
+单引号和双引号基本相同。但是，反引号允许我们通过 ${…} 将任何表达式嵌入到字符串中：
+```
+function sum(a, b) {
+  return a + b;
+}
+
+alert(`1 + 2 = ${sum(1, 2)}.`); // 1 + 2 = 3.
+```
+使用反引号的另一个优点是它们允许字符串跨行：
+```
+let guestList = `Guests:
+ * John
+ * Pete
+ * Mary
+`;
+
+alert(guestList); // 客人清单，多行
+```
+
+### 字符串长度
+```
+alert( `My\n`.length ); // 3
+```
+
+### 访问字符
+```
+let str = `Hello`;
+
+// 第一个字符
+alert( str[0] ); // H
+alert( str.charAt(0) ); // H
+
+// 最后一个字符
+alert( str[str.length - 1] ); // o
+```
+也可以使用 for..of 遍历字符：
+```
+for (let char of "Hello") {
+  alert(char); // H,e,l,l,o（char 变为 "H"，然后是 "e"，然后是 "l" 等）
+}
+```
+
+### 字符串是不可变的
+```
+let str = 'Hi';
+
+str[0] = 'h'; // error
+alert( str[0] ); // 无法运行
+
+
+str = 'h' + str[1];  // 替换字符串
+alert( str ); // hi
+```
+### 改变大小写
+
+```
+alert( 'Interface'.toUpperCase() ); // INTERFACE
+alert( 'Interface'.toLowerCase() ); // interface
+```
+
+### 查找子字符串
+#### str.indexOf(substr, pos)
+它从给定位置 pos 开始，在 str 中查找 substr，如果没有找到，则返回 -1，否则返回匹配成功的位置。
+```
+let str = 'Widget with id';
+
+alert( str.indexOf('Widget') ); // 0，因为 'Widget' 一开始就被找到
+alert( str.indexOf('widget') ); // -1，没有找到，检索是大小写敏感的
+
+alert( str.indexOf("id") ); // 1，"id" 在位置 1 处（……idget 和 id）
+
+alert( str.indexOf('id', 2) ) // 12
+```
+
+#### includes，startsWith，endsWith
