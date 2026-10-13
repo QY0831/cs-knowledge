@@ -1,0 +1,85 @@
+Embedding matrix (We)
+- words(token) -> vectors 
+P.S. actually not one word maps to one token, depends on tokenizer, just for easily understanding)
+- gpt3 12888 dims x 50257 tokens = 617,558,016
+- encode without any input from surroundings
+Unembedding matrix (Wu)
+- one row for each word in the vocab 
+- also 12888 dims x 50257 tokens = 617,558,016
+
+softmax: 0-1 normalization
+logits: softmax output probalities
+
+Transformer
+Input vector: what the word is and position -> E
+
+Example:
+A fluffy blue creature roamed the verdant forest
+
+Query vec(128 dims) of 'creature':  Any adjectives in front of me?
+Wq * E = Q
+producing one Query Vec for each token
+
+Key vec: the potential answer of query
+Wk * E = Q
+In this case, K(fluffy) are Q(creature) are closely aligned in 128-dim Query/Key space
+
+To get the alignment, compute dot product of each K and Q (a grid); bigger dot products, better align (fluffly/blue attend to creature)
+Compute softmax on each column of the grid -> get weights of relevance
+masking: preventing later tokens influenced by earilier tokens (mark the weight to 0); before softmax, mark these products to negative infinity.
+the grid size = (context size)^2
+
+Value vec: something that add to the embedding of the second word -> add value of fluffy to creature, got fluffy creature
+		   if this word is relevant to adjusting the meaning of something else, what should be added to something else to reflect it?
+Wv * E = V
+for each column in grid, compute the value vector by the corresponding weight in that column, sum it as deltaE
+E' = E + deltaE (new E is fluffy blue creature)
+
+the whole process is one head of attention, parameterized by Wq, Wk, Wv
+Query: 12288 * 128 = 1,572,864 (per head)
+Key: 12288 * 128 = 1,572,864   (per head) 
+Value: 12288 * 12288 = 150,994,944 (per head)
+To aviod add 150,994,944 weights, use to 2 smaller matrixs
+value down matrix on the right: 12288 * 128, maps 128 dims to 12288 dims
+value up matrix on the left: 128 * 12288, maps 12288 dims to 128 dims
+value up + value down = "low rank" transformation in linear algebra
+Value: 12288 * 128 * 2 = 1,572,864 * 2 (per head)
+
+multi-headed attention: run a lot of single-headed attention in parallel, each with its own distinct Wq, Wk, Wv; GPT3 using 96 heads
+96 Wk&Wq produce 96 distinct attention pattern, and Wv produces the deltaEs
+for each token, every head produces a proposed change to be added to the embedding in that position
+Ei = Ei + dEi1 + dEi2 + ...
+
+
+MLP
+1/3 parameters in Attention, while 2/3 parameters in MLP (Multilayer Perceptron)
+'Michael Jordan' vector(after attention) -> Linear -> ReLu -> Linear -> Basketball -> Michael Jordan plays Baseketball
+
+Linear Matrix:
+Each row asks a different question -> output dot product; GPT-3 ask 4 x 12,288 = 49,152 questions (shape: 49,152 x 12,288, as Wup)
+Bias Vec: adjust the output dot product
+WupE + Bup = Linear result
+
+ReLu: Rectified Linear Unit 
+Yes or No: map negative values to 0
+
+Another Linear Matrix:
+Wdown
+back down to the size of input vector
+each column is a dierction in the space (like Basketball in C0, if n0 > 0, added to final result;otherwise no effect)
+each column: what will be added to final result if the corresponding neuron is active
+Wdown[] + Bdown = Another Linear result
+
+Finally add the linear result to the input vector
+Input: F.N.Micheal + L.N.Jordan
+Output: F.N.Micheal + L.N.Jordan + Basketball
+
+Every vector are processed in parallel
+
+Wup Matrix: 49,152 * 12,288
+Wdown Matrix: 12,288 * 49,152 
+n Layers = 96
+
+Superposition: store more ideas than the dimensions in the space (using nearly perpendicualr dierctions of the space)
+In general, a consequence of something known as the Johnson-Lindenstrauss lemma is that the number of vectors that can be crammed into a space that are nearly perpendicular grows exponentially with the number of dimensions.
+A single feature is some specific combination of neurons instead of a single neuron (a superposition)
