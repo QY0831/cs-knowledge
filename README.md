@@ -37,3 +37,8 @@
 - [Coursera Deep Learning Specialization](https://www.coursera.org/specializations/deep-learning)
 - [3Blue1Brown](https://www.3blue1brown.com/) — 数学可视化；[神经网络系列](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) 讲清反向传播与梯度下降的直觉
 - [Karpathy: Neural Networks: Zero to Hero](https://karpathy.ai/zero-to-hero.html) — 从零手写反向传播、makemore、GPT
+
+### 论文清单
+
+- [Ilya Sutskever 推荐阅读清单](ai/Ilya-Sutskever-推荐阅读清单.md) — 约 30 篇奠基论文（Transformer、ResNet、注意力、缩放定律、MDL、复杂度理论），附中文导读与阅读路线
+- [原清单仓库](https://github.com/dzyim/ilya-sutskever-recommended-reading)
