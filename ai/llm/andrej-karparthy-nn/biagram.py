@@ -58,6 +58,26 @@ def estimate_loss():
     model.train()
     return out
 
+
+class Head(nn.Module):
+
+    def __init__(self, head_size):
+        super().__init__()
+        self.key = nn.Linear(n_embd, head_size, bias=False)
+        self.query = nn.Linear(n_embd, head_size, bias=False)
+        self.value = nn.Linear(n_embd, head_size, bias=False)
+        self.register_buffer('tril', torch.tril(torch.one(block_size, block_size)))
+
+    def forward(self, x):
+        B, T, C = x
+        k = self.key(x)
+        q = self.query(x)
+        wei = q @ k.transpose(-2, -1) * C**-0.5
+        wei = F.softmax(wei, dim=-1)
+        v = self.value(x)
+        out = wei @ v
+        return out
+
 # super simple bigram model
 class BigramLanguageModel(nn.Module):
 
@@ -76,7 +96,7 @@ class BigramLanguageModel(nn.Module):
         # 也是可训练的参数，有点像bias
         self.position_embedding_table = nn.Embedding(block_size, n_embed)
 
-        # 矩阵乘 
+        self.sa_head = Head(n_embed)
         self.lm_head = nn.Linear(n_embed, vocab_size)
 
     def forward(self, idx, targets=None):
@@ -87,6 +107,7 @@ class BigramLanguageModel(nn.Module):
         tok_emb = self.token_embedding_table(idx) # (B,T,C)  (4, 6, 32)
         pos_emb = self.position_embedding_table(torch.arrange(T)) # (T,C) (6, 32)
         x = tok_emb + pos_emb # (4, 6, 32)
+        x = self.sa_head(x)
         logits = self.lm_head(x) # (4, 6, 65)
 
         if targets is None:
