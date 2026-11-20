@@ -5,9 +5,9 @@ from torch.nn import functional as F
 # hyperparameters
 batch_size = 32 # how many independent sequences will we process in parallel?
 block_size = 8 # what is the maximum context length for predictions?
-max_iters = 3000
+max_iters = 5000
 eval_interval = 300
-learning_rate = 1e-2
+learning_rate = 1e-3
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 eval_iters = 200
 n_embed = 32
@@ -63,20 +63,39 @@ class Head(nn.Module):
 
     def __init__(self, head_size):
         super().__init__()
-        self.key = nn.Linear(n_embd, head_size, bias=False)
-        self.query = nn.Linear(n_embd, head_size, bias=False)
-        self.value = nn.Linear(n_embd, head_size, bias=False)
-        self.register_buffer('tril', torch.tril(torch.one(block_size, block_size)))
+        self.head_size = head_size
+        self.key = nn.Linear(n_embed, head_size, bias=False)
+        self.query = nn.Linear(n_embed, head_size, bias=False)
+        self.value = nn.Linear(n_embed, head_size, bias=False)
+
+        #  mask登记成 buffer：下三角图案永远不变，一次算好，不必每步 torch.tril(torch.ones(...))
+        self.register_buffer('tril', torch.tril(torch.ones(block_size, block_size)))
 
     def forward(self, x):
-        B, T, C = x
+        B, T, C = x.shape
         k = self.key(x)
         q = self.query(x)
-        wei = q @ k.transpose(-2, -1) * C**-0.5
+        # 除以 sqrt(head_size) 而不是 sqrt(C)：缩放对象是点积的维度
+        wei = q @ k.transpose(-2, -1) * self.head_size**-0.5  # (B, T, C) @ (B, C, T) ---> (B, T, T) 
+        # 因果 mask：只允许看 j<=i。必须切片 [:T,:T]，生成时 T 可能小于 block_size
+        wei = wei.masked_fill(self.tril[:T, :T] == 0, float('-inf'))  # （B, T, T)
         wei = F.softmax(wei, dim=-1)
         v = self.value(x)
         out = wei @ v
         return out
+
+
+class MultiHeadAttention(nn.Module):
+    """ multiple heads of self-attention in parallel """
+
+    def __init__(self, num_heads, head_size):
+        super().__init__()
+        self.heads = nn.ModuleList([Head(head_size) for _ in range(num_heads)])
+
+    def forward(self, x):
+        # 单头 wei: (B, T, T)
+        return torch.cat([h(x) for h in self.heads], dim=-1)
+
 
 # super simple bigram model
 class BigramLanguageModel(nn.Module):
@@ -96,16 +115,25 @@ class BigramLanguageModel(nn.Module):
         # 也是可训练的参数，有点像bias
         self.position_embedding_table = nn.Embedding(block_size, n_embed)
 
-        self.sa_head = Head(n_embed)
-        self.lm_head = nn.Linear(n_embed, vocab_size)
+        self.sa_head = Head(n_embed) # 一个注意力头，token之间交换信息
+        self.lm_head = nn.Linear(n_embed, vocab_size) # 输出头
 
     def forward(self, idx, targets=None):
+
+        # 数据流
+        # idx (B,T) int64
+        #  ├─ token_embedding_table  → (B,T,32)   "我是谁"
+        #  ├─ position_embedding_table → (T,32)   "我在哪"      ┐ 相加
+        #  →  x (B,T,32)                                       ┘
+        #  →  sa_head(x)  → (B,T,32)     ← 通信：token 之间交换信息
+        #  →  lm_head(x)  → (B,T,65)     ← 每位置出 65 个 logits
+        #  →  cross_entropy(logits.view(-1,65), targets.view(-1))
 
         B, T = idx.shape
 
         # idx and targets are both (B,T) tensor of integers
         tok_emb = self.token_embedding_table(idx) # (B,T,C)  (4, 6, 32)
-        pos_emb = self.position_embedding_table(torch.arrange(T)) # (T,C) (6, 32)
+        pos_emb = self.position_embedding_table(torch.arange(T)) # (T,C) (6, 32)
         x = tok_emb + pos_emb # (4, 6, 32)
         x = self.sa_head(x)
         logits = self.lm_head(x) # (4, 6, 65)
@@ -123,8 +151,10 @@ class BigramLanguageModel(nn.Module):
     def generate(self, idx, max_new_tokens):
         # idx is (B, T) array of indices in the current context
         for _ in range(max_new_tokens):
+            # crop idx to the last block_size tokens（位置表只有 block_size 行）
+            idx_cond = idx[:, -block_size:]
             # get the predictions
-            logits, loss = self(idx)
+            logits, _ = self(idx_cond)          # 生成时不给 targets，loss 无用
             # focus only on the last time step
             logits = logits[:, -1, :] # becomes (B, C)
             # apply softmax to get probabilities
@@ -160,3 +190,4 @@ for iter in range(max_iters):
 # generate from the model
 context = torch.zeros((1, 1), dtype=torch.long, device=device)
 print(decode(m.generate(context, max_new_tokens=500)[0].tolist()))
+
